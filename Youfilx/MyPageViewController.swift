@@ -2,7 +2,7 @@
 //  MyPageViewController.swift
 //  Youfilx
 //
-//  Created by t2023-m0076 on 2023/09/04.
+//  Created by 삼인조 on 2023/09/04.
 //
 
 import UIKit
