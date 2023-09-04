@@ -22,6 +22,8 @@
 		3FF271FF2AA5A4A3000A26F5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF271FE2AA5A4A3000A26F5 /* User.swift */; };
 		3FF272012AA5A622000A26F5 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF272002AA5A622000A26F5 /* Video.swift */; };
 		3FF272032AA5A633000A26F5 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF272022AA5A633000A26F5 /* Comment.swift */; };
+		3FF272062AA5C683000A26F5 /* YouTubePlayerKit in Frameworks */ = {isa = PBXBuildFile; productRef = 3FF272052AA5C683000A26F5 /* YouTubePlayerKit */; };
+		3FF272092AA5CC13000A26F5 /* HomeViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF272082AA5CC13000A26F5 /* HomeViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,7 @@
 		3FF271FE2AA5A4A3000A26F5 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		3FF272002AA5A622000A26F5 /* Video.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		3FF272022AA5A633000A26F5 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		3FF272082AA5CC13000A26F5 /* HomeViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3FF272062AA5C683000A26F5 /* YouTubePlayerKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -88,6 +92,7 @@
 		3FF271FC2AA5A471000A26F5 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
+				3FF272072AA5CBE8000A26F5 /* Cell */,
 				3FF271E72AA598C4000A26F5 /* HomeViewController.swift */,
 				3FF271EB2AA59D49000A26F5 /* LoginViewController.swift */,
 				3FF271EE2AA59D65000A26F5 /* SignUpViewController.swift */,
@@ -110,6 +115,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		3FF272072AA5CBE8000A26F5 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				3FF272082AA5CC13000A26F5 /* HomeViewCell.swift */,
+			);
+			path = Cell;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,6 +139,9 @@
 			dependencies = (
 			);
 			name = Youfilx;
+			packageProductDependencies = (
+				3FF272052AA5C683000A26F5 /* YouTubePlayerKit */,
+			);
 			productName = Youfilx;
 			productReference = 3FF271D02AA597E7000A26F5 /* Youfilx.app */;
 			productType = "com.apple.product-type.application";
@@ -154,6 +170,9 @@
 				Base,
 			);
 			mainGroup = 3FF271C72AA597E7000A26F5;
+			packageReferences = (
+				3FF272042AA5C683000A26F5 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */,
+			);
 			productRefGroup = 3FF271D12AA597E7000A26F5 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -189,6 +208,7 @@
 				3FF271D62AA597E7000A26F5 /* SceneDelegate.swift in Sources */,
 				3FF271FB2AA59E10000A26F5 /* MyPageHistoryViewController.swift in Sources */,
 				3FF272032AA5A633000A26F5 /* Comment.swift in Sources */,
+				3FF272092AA5CC13000A26F5 /* HomeViewCell.swift in Sources */,
 				3FF271F32AA59D96000A26F5 /* DetailPageViewController.swift in Sources */,
 				3FF271EC2AA59D49000A26F5 /* LoginViewController.swift in Sources */,
 				3FF271E82AA598C4000A26F5 /* HomeViewController.swift in Sources */,
@@ -398,6 +418,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3FF272042AA5C683000A26F5 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SvenTiigi/YouTubePlayerKit.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3FF272052AA5C683000A26F5 /* YouTubePlayerKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3FF272042AA5C683000A26F5 /* XCRemoteSwiftPackageReference "YouTubePlayerKit" */;
+			productName = YouTubePlayerKit;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3FF271C82AA597E7000A26F5 /* Project object */;
 }
