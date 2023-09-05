@@ -25,26 +25,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         loginViewController.loginCompletion = { [weak self] in
             self?.showTabBarController()
         }
-//        loginViewController.signUpCompletion = { [weak self] in
-//            self?.showSignUpController()
-//        }
         
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
     
-//    // 회원가입 버튼 클릭 시 호출될 메서드
-//    func showSignUpController() {
-//        let signUpViewController = SignUpViewController()
-//        let navigationController = UINavigationController(rootViewController: signUpViewController)
-//
-//        navigationController.navigationBar.isHidden = false
-//        navigationController.navigationBar.backItem?.hidesBackButton = false
-//
-//        window?.rootViewController = navigationController
-//        window?.makeKeyAndVisible()
-//    }
-//
     // 로그인 성공 시 호출될 메서드
     func showTabBarController() {
         let tabBarController = UITabBarController()

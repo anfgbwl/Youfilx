@@ -45,6 +45,7 @@ extension DetailPageViewController {
 extension DetailPageViewController {
     
     private func configure() {
+        view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
         [youtubeView].forEach {

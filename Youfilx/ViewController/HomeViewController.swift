@@ -127,7 +127,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 디테일페이지에 넘겨주는 비디오 정보(id)
         let selectedVideo = HomeViewController.videoIds[indexPath.row]
-        navigationController?.pushViewController(DetailPageViewController(), animated: true)
+        navigationController?.pushViewController(DetailPageViewController(videoId: selectedVideo), animated: true)
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
