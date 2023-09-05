@@ -20,6 +20,16 @@ final class DetailPageViewController: UIViewController {
         return stackView
     }()
     private lazy var youtubeView = YoutubeView()
+    private let videoId: String
+    
+    init(videoId: String) {
+        self.videoId = videoId
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
 
 }
 
@@ -42,7 +52,7 @@ extension DetailPageViewController {
         }
         
         layout()
-        prepareView(videoId: "jOTfBlKSQYY")
+        prepareView(videoId: videoId)
     }
     
     private func layout() {
