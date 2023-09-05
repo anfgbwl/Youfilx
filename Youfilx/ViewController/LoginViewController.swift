@@ -2,6 +2,9 @@ import UIKit
 
 class LoginViewController: UIViewController, UITextFieldDelegate {
 
+    var loginCompletion: (() -> Void)?
+    var signUpCompletion: (() -> Void)?
+    
     // MARK: - 로고 타이틀
     private lazy var logoImageView: UIImageView = {
         let image = UIImage(named: "youflix_logo") // 이미지 파일 이름
@@ -88,7 +91,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         button.layer.borderColor = #colorLiteral(red: 0.5568627715, green: 0.5568627715, blue: 0.5568627715, alpha: 1)
         button.setTitle("로그인", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        button.isEnabled = false // 초기 비활성화
+//        button.isEnabled = false // 초기 비활성화
+
         return button
     }()
     
@@ -121,7 +125,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         
         setupUI()
         signUpButton.addTarget(self, action: #selector(moveToSignUpViewController), for: .touchUpInside)
-        
+        loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
     }
     
     
@@ -172,17 +176,38 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     }
 
     
+    @objc func loginButtonTapped() {
+        loginCompletion?()
+        let homeViewController = HomeViewController()
+        navigationController?.pushViewController(homeViewController, animated: true)
+    }
+    
     
     @objc func moveToSignUpViewController() {
+        print("회원가입 버튼 눌림")
+        signUpCompletion?()
         let signUpViewController = SignUpViewController()
         navigationController?.pushViewController(signUpViewController, animated: true)
     }
     
-    
-    
-    
-    
-    
+    @objc func signUpButtonTapped() {
+        let alert = UIAlertController(title: "회원가입" ,message: "입력하신 정보로 가입하시겠습니까?", preferredStyle: .alert)
+        
+        let success = UIAlertAction(title: "확인", style: .default) { action in
+            print("확인 버튼이 눌림")
+        }
+        
+        let cancel = UIAlertAction(title: "취소", style: .default) { action in
+            print("취소 버튼이 눌림")
+        }
+        
+        alert.addAction(success)
+        alert.addAction(cancel)
+        
+        present(alert, animated: true, completion: nil)
+        
+    }
+        
     
     //MARK: - Delegate 설정
     // 텍스트 필드 delegate 메서드 구현
@@ -210,6 +235,4 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             textField.placeholder = "비밀번호를 입력하세요."
         }
     }
-
-    
 }
