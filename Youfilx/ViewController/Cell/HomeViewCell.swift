@@ -32,7 +32,7 @@ class HomeViewCell: UICollectionViewCell {
     
     private let title: UILabel = {
         let title = UILabel()
-        title.text = "영상 타이틀"
+        title.text = "title"
         title.textColor = .label
         title.textAlignment = .left
         title.numberOfLines = 2
@@ -41,8 +41,8 @@ class HomeViewCell: UICollectionViewCell {
     
     private let user: UILabel = {
         let name = UILabel()
-        name.text = "유저 이름"
-        name.textColor = .systemGray
+        name.text = "nickname"
+        name.textColor = .darkGray
         let newFont = UIFont.systemFont(ofSize: 13.0)
         name.font = newFont
         name.textAlignment = .left

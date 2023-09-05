@@ -11,6 +11,8 @@ import Alamofire
 class HomeViewController: UIViewController {
     
     // MARK: - Variables
+    private var nextPageToken: String?
+    static var videoIds: [String] = []
     private var thumbnails: [UIImage] = []
     private var titles: [String] = []
     private var users: [String] = []
@@ -35,23 +37,18 @@ class HomeViewController: UIViewController {
         self.collectionView.dataSource = self
         
         loadVideo()
-        
-//        let url = API.baseUrl + "videos"
-//        let apiParam = ["part":"snippet", "chart":"mostPopular", "maxResult":25, "regionCode":"KR", "key":API.key] as [String : Any]
-//
-//        AF.request(url, method: .get, parameters: apiParam).responseJSON(completionHandler: { respone in
-//            debugPrint(respone)
-//        })
     }
     
-    private func loadVideo() {
-        APIManager.shared.fetchVideos { [weak self] result in
+    // MARK: - YouTube Video Load
+    private func loadVideo(pageToken: String? = nil) {
+        APIManager.shared.fetchVideos(pageToken: nextPageToken ?? "") { [weak self] result in
             switch result {
             case .success(let data):
                 if let json = data as? [String:Any],
                    let items = json["items"] as? [[String:Any]] {
                     for item in items {
-                        if let snippet = item["snippet"] as? [String:Any],
+                        if let id = item["id"] as? String,
+                           let snippet = item["snippet"] as? [String:Any],
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String:Any],
                            let standard = thumbnails["standard"] as? [String:Any],
@@ -61,10 +58,10 @@ class HomeViewController: UIViewController {
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
+                                        HomeViewController.videoIds.append(id)
                                         self?.thumbnails.append(image)
                                         self?.titles.append(title)
                                         self?.users.append(user)
-                                        
                                         DispatchQueue.main.async {
                                             self?.collectionView.reloadData()
                                         }
@@ -77,20 +74,26 @@ class HomeViewController: UIViewController {
                             }
                         }
                     }
+                    self?.nextPageToken = json["nextPageToken"] as? String
                 }
             case .failure(let error):
                 print(error)
             }
         }
+        
     }
     
+    private func loadMoreData() {
+        loadVideo(pageToken: nextPageToken)
+    }
+  
     // MARK: - setupUI
     private func setupUI() {
         view.backgroundColor = .white
         
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.hidesBarsOnSwipe = true
-        self.navigationItem.title = "닉네임"
+        self.navigationItem.title = "삼인조"
         
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -120,14 +123,26 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
         cell.configure(video: image, image: image, title: title, name: user)
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // 디테일페이지에 넘겨주는 비디오 정보(id)
+        let selectedVideo = HomeViewController.videoIds[indexPath.row]
+        navigationController?.pushViewController(DetailPageViewController(), animated: true)
+    }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        let offsetY = scrollView.contentOffset.y
+        let contentHeight = scrollView.contentSize.height
+        let scrollViewHeight = scrollView.frame.size.height
+        
+        if offsetY > contentHeight - scrollViewHeight {
+            loadMoreData()
+        }
+    }
 }
 
 extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Style1: 가로 동영상 2개 배치
-//        let size = (self.view.frame.width/2) - 6
-//        return CGSize(width: size, height: 100)
-        // Style2: 가로 동영상 1개 배치
         let size = self.view.frame.width
         return CGSize(width: size, height: 220)
     }
@@ -136,9 +151,4 @@ extension HomeViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 80
     }
-    
-    // Horizontal Spacing
-//    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-//        return 10
-//    }
 }

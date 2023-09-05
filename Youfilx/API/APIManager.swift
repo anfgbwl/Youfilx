@@ -12,21 +12,22 @@ class APIManager {
     static let shared = APIManager()
     private init() {}
     
-    func fetchVideos(completion: @escaping (Result<Any, AFError>) -> Void) {
+    func fetchVideos(pageToken: String, completion: @escaping (Result<Any, AFError>) -> Void) {
         let url = API.baseUrl + "videos"
         let apiParam = [
-            "part":"snippet",
-            "chart":"mostPopular",
-            "maxResult":25,
-            "regionCode":"KR",
-            "key":API.key
-        ] as [String : Any]
+            "part": "snippet",
+            "chart": "mostPopular",
+            "maxResult": 500,
+            "regionCode": "KR",
+            "key": API.key,
+            "pageToken": "\(pageToken)"
+        ] as [String: Any]
         
         AF.request(url, method: .get, parameters: apiParam)
             .validate()
             .responseJSON { response in
                 completion(response.result)
-                debugPrint(response)
+//                debugPrint(response)
             }
     }
 }
