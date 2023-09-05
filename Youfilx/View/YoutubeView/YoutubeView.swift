@@ -8,6 +8,15 @@
 import UIKit
 import WebKit
 
+public enum YoutubeViewState: String {
+    case notStart = "-1"
+    case end = "0"
+    case playing = "1"
+    case pause = "2"
+    case buffering = "3"
+    case `null` = "null"
+}
+
 public class YoutubeView: UIView {
     
     private enum YoutubeViewError: LocalizedError {
@@ -26,7 +35,14 @@ public class YoutubeView: UIView {
         "rel": 0 as AnyObject
     ]
     
-    private var playerCallBacks: [String: AnyObject] = [:]
+    private var playerCallBacks: [String: AnyObject] = [
+        "onReady": "onReady" as AnyObject,
+        "onStateChange": "onStateChange" as AnyObject,
+        "onPlaybackQualityChange": "onPlaybackQualityChange" as AnyObject,
+        "onError": "onPlayerError" as AnyObject
+    ]
+
+    var state: ((YoutubeViewState) -> Void)? = nil
     
     init() {
         super.init(frame: .zero)
@@ -53,8 +69,10 @@ public class YoutubeView: UIView {
         let wkWebViewConfiguration = WKWebViewConfiguration()
         wkWebViewConfiguration.allowsInlineMediaPlayback = true
         wkWebViewConfiguration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        let wkWebView = WKWebView(frame: .zero, configuration: wkWebViewConfiguration)
+        let wkWebView = WKWebView(frame: frame, configuration: wkWebViewConfiguration)
         wkWebView.scrollView.isScrollEnabled = false
+        wkWebView.allowsBackForwardNavigationGestures = true
+        wkWebView.allowsLinkPreview = true
         wkWebView.backgroundColor = .clear
         wkWebView.navigationDelegate = self
         self.addSubview(wkWebView)
@@ -138,14 +156,28 @@ public class YoutubeView: UIView {
         }
     }
     
+    fileprivate func eventProcess(_ url: URL) {
+        guard let stateCode = url.absoluteString.components(separatedBy: "=").last else { return }
+        guard let currentState = YoutubeViewState.init(rawValue: stateCode) else { return }
+        state!(currentState)
+    }
+    
 }
 
 extension YoutubeView: WKNavigationDelegate {
-//    public func webView(
-//        _ webView: WKWebView,
-//        decidePolicyFor navigationAction: WKNavigationAction,
-//        decisionHandler: @escaping (WKNavigationActionPolicy
-//        ) -> Void) {
-//
-//    }
+    public func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy
+        ) -> Void) {
+        var action: WKNavigationActionPolicy?
+        defer {
+            decisionHandler(action ?? .allow)
+        }
+        guard let url = navigationAction.request.url else {return}
+        if url.scheme == "ytplayer" {
+            eventProcess(url)
+            action = .cancel
+        }
+    }
 }
