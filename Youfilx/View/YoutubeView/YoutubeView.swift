@@ -140,19 +140,22 @@ public class YoutubeView: UIView {
         }
     }
     
-    public func getCurrentTime(completion: ((Double?, Error?) -> Void)? = nil) {
-        evaluateJavaScript(command: "getCurrentTime()") { (result, error) in
-            completion?(result as? Double, error)
+    public func getCurrentTime(completion: ((Double) -> Void)? = nil) {
+        evaluateJavaScript(command: "getCurrentTime()") { result in
+            if let result = result as? Double {
+                completion?(result)
+            }
         }
     }
     
-    private func evaluateJavaScript(command: String, completion: ((Any?, Error?) -> Void)? = nil) {
+    private func evaluateJavaScript(command: String, completion: ((Any?) -> Void)? = nil) {
         let fullCommand = "player.\(command);"
         webView.evaluateJavaScript(fullCommand) { (result, error) in
             if let error, (error as NSError).code != 5 {
-                completion?(nil, error)
+                print(error)
+                completion?(nil)
             }
-            completion?(result, nil)
+            completion?(result)
         }
     }
     
