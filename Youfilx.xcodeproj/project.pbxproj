@@ -29,6 +29,7 @@
 		3FF272122AA6C233000A26F5 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF272112AA6C233000A26F5 /* APIManager.swift */; };
 		F13DF5A52AA806CF002F638B /* And.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5A42AA806CF002F638B /* And.swift */; };
 		F13DF5A72AA810D2002F638B /* CheckableButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5A62AA810D2002F638B /* CheckableButton.swift */; };
+		F13DF5A92AA81D0A002F638B /* BackgroundChangableWhenTappedUIStackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5A82AA81D0A002F638B /* BackgroundChangableWhenTappedUIStackView.swift */; };
 		F1FA0FA32AA73CF300B5BC5A /* YoutubePlayer.html in Resources */ = {isa = PBXBuildFile; fileRef = F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */; };
 		F1FA0FA42AA73CF300B5BC5A /* YoutubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */; };
 /* End PBXBuildFile section */
@@ -56,6 +57,7 @@
 		3FF272112AA6C233000A26F5 /* APIManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIManager.swift; sourceTree = "<group>"; };
 		F13DF5A42AA806CF002F638B /* And.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = And.swift; sourceTree = "<group>"; };
 		F13DF5A62AA810D2002F638B /* CheckableButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CheckableButton.swift; sourceTree = "<group>"; };
+		F13DF5A82AA81D0A002F638B /* BackgroundChangableWhenTappedUIStackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundChangableWhenTappedUIStackView.swift; sourceTree = "<group>"; };
 		F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = YoutubePlayer.html; sourceTree = "<group>"; };
 		F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -162,6 +164,7 @@
 			children = (
 				F1FA0FA02AA73CF300B5BC5A /* YoutubeView */,
 				F13DF5A62AA810D2002F638B /* CheckableButton.swift */,
+				F13DF5A82AA81D0A002F638B /* BackgroundChangableWhenTappedUIStackView.swift */,
 			);
 			name = View;
 			path = ../../Youfilx/Youfilx/View;
@@ -268,6 +271,7 @@
 				F13DF5A52AA806CF002F638B /* And.swift in Sources */,
 				3FF271D62AA597E7000A26F5 /* SceneDelegate.swift in Sources */,
 				3FF271FB2AA59E10000A26F5 /* MyPageHistoryViewController.swift in Sources */,
+				F13DF5A92AA81D0A002F638B /* BackgroundChangableWhenTappedUIStackView.swift in Sources */,
 				3FF272032AA5A633000A26F5 /* Comment.swift in Sources */,
 				3FF272092AA5CC13000A26F5 /* HomeViewCell.swift in Sources */,
 				3FF271F32AA59D96000A26F5 /* DetailPageViewController.swift in Sources */,

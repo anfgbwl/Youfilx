@@ -20,15 +20,15 @@ final class DetailPageViewController: UIViewController {
         return stackView
     }()
     private lazy var youtubeView = YoutubeView()
-    private lazy var videoInformationStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.backgroundColor = .black
-        stackView.distribution = .fill
-        stackView.alignment = .leading
-        stackView.axis = .vertical
-        stackView.spacing = 10
-        return stackView
-    }()
+    private lazy var videoInformationStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
+        //TODO: 자세한 정보 보여주는 뷰
+    }.and {
+        $0.backgroundColor = .black
+        $0.distribution = .fill
+        $0.alignment = .leading
+        $0.axis = .vertical
+        $0.spacing = 10
+    }
     private lazy var videoTitleLabel: UILabel = {
         let uiLabel = UILabel()
         uiLabel.textColor = .white
@@ -88,7 +88,45 @@ final class DetailPageViewController: UIViewController {
         $0.setTitleColor(UIColor.white, for: .normal)
         $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
     }
-    
+    private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
+        //TODO: 댓글 자세히 보기
+    }.and {
+        $0.axis = .vertical
+        $0.distribution = .fill
+        $0.alignment = .leading
+        $0.backgroundColor = .black
+    }
+    private lazy var videoCommentTitleStackView = UIStackView().and {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .fillProportionally
+        $0.spacing = 10
+    }
+    private lazy var videoCommentTitleLabel = UILabel().and {
+        $0.text = "댓글"
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 18, weight: .semibold)
+    }
+    private lazy var videoCommentCountLabel = UILabel().and {
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 12, weight: .light)
+    }
+    private lazy var videoCommentContextStackView = UIStackView().and {
+        $0.axis = .horizontal
+        $0.alignment = .center
+        $0.distribution = .fill
+        $0.spacing = 10
+    }
+    private lazy var videoCommenterImageView = UIImageView().and {
+        $0.layer.cornerRadius = 11
+    }
+    private lazy var videoCommentLabel = UILabel().and {
+        $0.textColor = .white
+        $0.numberOfLines = 2
+    }
+    private lazy var videoCommentSeeMore = UIButton().and {
+        $0.setImage(UIImage(systemName: "chevron.down")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
+    }
     private let videoId: String
     
     init(videoId: String) {
@@ -116,6 +154,10 @@ extension DetailPageViewController {
         videoMakerNameLabel.text = "Maker"
         videoMakerSubscriberCountLabel.text = "3.2천"
         
+        videoCommentCountLabel.text = "228"
+        videoCommenterImageView.image = .actions
+        videoCommentLabel.text = "weataewtteawawetewaaefwawefewfwefaewfaewafefetawetwettweatweattewae"
+        
     }
 }
 
@@ -126,7 +168,7 @@ extension DetailPageViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
 
-        [youtubeView, videoInformationStackView, videoMakerStackView].forEach {
+        [youtubeView, videoInformationStackView, videoMakerStackView, videoCommentStackView].forEach {
             stackView.addArrangedSubview($0)
         }
         [videoInformationLabel, videoMoreInformationLabel].forEach {
@@ -141,6 +183,15 @@ extension DetailPageViewController {
         [videoMakerImageView, videoMakerInformationStackView, videoLikeButton].forEach {
             videoMakerStackView.addArrangedSubview($0)
         }
+        [videoCommentTitleStackView, videoCommentContextStackView].forEach {
+            videoCommentStackView.addArrangedSubview($0)
+        }
+        [videoCommentTitleLabel, videoCommentCountLabel].forEach {
+            videoCommentTitleStackView.addArrangedSubview($0)
+        }
+        [videoCommenterImageView, videoCommentLabel, videoCommentSeeMore].forEach {
+            videoCommentContextStackView.addArrangedSubview($0)
+        }
         
         layout()
         prepareView(videoId: videoId)
@@ -153,6 +204,9 @@ extension DetailPageViewController {
         
         videoMakerImageView.translatesAutoresizingMaskIntoConstraints = false
         videoMakerNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        videoCommenterImageView.translatesAutoresizingMaskIntoConstraints = false
+        videoCommentSeeMore.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -169,7 +223,12 @@ extension DetailPageViewController {
             youtubeView.heightAnchor.constraint(equalToConstant: 300),
             
             videoMakerImageView.heightAnchor.constraint(equalToConstant: 30),
-            videoMakerImageView.widthAnchor.constraint(equalToConstant: 30)
+            videoMakerImageView.widthAnchor.constraint(equalToConstant: 30),
+            
+            videoCommenterImageView.heightAnchor.constraint(equalToConstant: 22),
+            videoCommenterImageView.widthAnchor.constraint(equalToConstant: 22),
+            videoCommentSeeMore.trailingAnchor.constraint(equalTo: videoCommentStackView.trailingAnchor, constant: -10),
+            videoCommentSeeMore.widthAnchor.constraint(equalToConstant: 15)
         ])
     }
     
