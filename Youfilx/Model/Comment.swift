@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Comment {
+struct Comment: Codable {
     let userNickname: String
     let commentDate: Date
     let commentContent: String

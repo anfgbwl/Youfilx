@@ -1,9 +1,12 @@
 import UIKit
 
-class LoginViewController: UIViewController, UITextFieldDelegate {
-
+class LoginViewController: UIViewController {
+    
     var loginCompletion: (() -> Void)?
-    var signUpCompletion: (() -> Void)?
+
+    
+    // 회원가입 성공 후에 로그인 화면으로 전달할 이메일과 비밀번호 프로퍼티
+
     
     // MARK: - 로고 타이틀
     private lazy var logoImageView: UIImageView = {
@@ -15,7 +18,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     // MARK: - 이메일 텍스트 뷰
     private lazy var emailView: UIView = {
         let view = UIView()
-        view.backgroundColor = .darkGray
+        view.backgroundColor = .gray
         view.layer.cornerRadius = 5
         view.clipsToBounds = true
         view.addSubview(emailTextField)
@@ -35,6 +38,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         tf.spellCheckingType = .no
         tf.keyboardType = .emailAddress
         tf.attributedPlaceholder = NSAttributedString(string: "이메일을 입력하세요", attributes: [.foregroundColor: UIColor.white])
+        tf.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
         
         // Delegate를 설정하여 포커스 상태 변화 감지
         tf.delegate = self
@@ -46,7 +50,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
     private lazy var passwordView: UIView = {
         let view = UIView()
         view.frame.size.height = 48
-        view.backgroundColor = .darkGray
+        view.backgroundColor = .gray
         view.layer.cornerRadius = 5
         view.clipsToBounds = true
         view.addSubview(passwordTextField)
@@ -67,6 +71,7 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         tf.isSecureTextEntry = true
         tf.clearsOnBeginEditing = false // false로 했는데도.. 수정할 때마다 내용이 사라짐...
         tf.attributedPlaceholder = NSAttributedString(string: "비밀번호를 입력하세요", attributes: [.foregroundColor: UIColor.white])
+        tf.addTarget(self, action: #selector(textFieldChanged(_:)), for: .editingChanged)
         
         // Delegate를 설정하여 포커스 상태 변화 감지
         tf.delegate = self
@@ -78,21 +83,21 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName:"eye.fill"),for: .normal)
         button.tintColor = .white
+        
         return button
     }()
     
     // MARK: - 로그인 버튼
     private let loginButton: UIButton = {
         let button = UIButton(type: .custom)
-        button.backgroundColor = .clear
+        button.backgroundColor = .darkGray
         button.layer.cornerRadius = 5
         button.clipsToBounds = true
-        button.layer.borderWidth = 1
-        button.layer.borderColor = #colorLiteral(red: 0.5568627715, green: 0.5568627715, blue: 0.5568627715, alpha: 1)
         button.setTitle("로그인", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-//        button.isEnabled = false // 초기 비활성화
-
+        button.isEnabled = false // 초기 비활성화
+        
+        
         return button
     }()
     
@@ -112,13 +117,16 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         button.backgroundColor = .clear
         button.setTitle("회원가입", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-
+        
         return button
     }()
     
     // 이메일 뷰와 패스워드 뷰, 로그인 버튼 높이 설정
     private let viewHeight: CGFloat = 48
     
+    // MARK: - 유효성 검사에 사용할 정규식
+    private let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    private let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,6 +134,8 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
         setupUI()
         signUpButton.addTarget(self, action: #selector(moveToSignUpViewController), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
+        passwordCheckButton.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
+        
     }
     
     
@@ -174,42 +184,88 @@ class LoginViewController: UIViewController, UITextFieldDelegate {
             signUpButton.heightAnchor.constraint(equalToConstant: viewHeight)
         ])
     }
-
+    
+    // MARK: - 버튼 관련 메서드
     
     @objc func loginButtonTapped() {
-        loginCompletion?()
-        let homeViewController = HomeViewController()
-        navigationController?.pushViewController(homeViewController, animated: true)
+        guard let enteredEmail = emailTextField.text, !enteredEmail.isEmpty,
+              let enteredPassword = passwordTextField.text, !enteredPassword.isEmpty,
+              let savedUser = loadUserFromUserDefaults() else { return }
+        
+        // 이메일 형식 검증
+        if !isValidEmail(enteredEmail) {
+            showAlert(title: "이메일 형식 오류", message: "올바른 이메일 주소를 입력하세요.")
+            return
+        }
+        
+        if enteredEmail == savedUser.id && enteredPassword == savedUser.password {
+            // 로그인 성공 시 사용자 정보를 homeViewController에 전달
+            let homeViewController = HomeViewController()
+            homeViewController.user = savedUser
+            self.addChild(homeViewController)
+            self.view.addSubview(homeViewController.view)
+            homeViewController.didMove(toParent: self)
+        } else {
+            showAlert(title: "로그인 실패", message: "이메일 또는 비밀번호가 일치하지 않습니다.")
+        }
     }
     
     
+
+    
     @objc func moveToSignUpViewController() {
         print("회원가입 버튼 눌림")
-        signUpCompletion?()
         let signUpViewController = SignUpViewController()
         navigationController?.pushViewController(signUpViewController, animated: true)
     }
     
-    @objc func signUpButtonTapped() {
-        let alert = UIAlertController(title: "회원가입" ,message: "입력하신 정보로 가입하시겠습니까?", preferredStyle: .alert)
-        
-        let success = UIAlertAction(title: "확인", style: .default) { action in
-            print("확인 버튼이 눌림")
-        }
-        
-        let cancel = UIAlertAction(title: "취소", style: .default) { action in
-            print("취소 버튼이 눌림")
-        }
-        
-        alert.addAction(success)
-        alert.addAction(cancel)
-        
-        present(alert, animated: true, completion: nil)
-        
-    }
-        
     
-    //MARK: - Delegate 설정
+    
+    @objc func passwordCheck() {
+        passwordTextField.isSecureTextEntry.toggle()
+        let imageName = passwordTextField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill"
+        passwordCheckButton.setImage(UIImage(systemName: imageName), for: .normal)
+    }
+    
+    @objc func textFieldChanged(_ textField: UITextField) {
+        if textField.text?.count == 1 {
+            if textField.text?.first == " " {
+                textField.text = ""
+                return
+            }
+        }
+        guard
+            let email = emailTextField.text, !email.isEmpty,
+            let password = passwordTextField.text, !password.isEmpty else {
+            loginButton.backgroundColor = .darkGray
+            loginButton.isEnabled = false
+            return
+        }
+        loginButton.backgroundColor = #colorLiteral(red: 0.8580306172, green: 0.1295066774, blue: 0.1757571995, alpha: 1)
+        loginButton.isEnabled = true
+    }
+    
+    // MARK: - 정규식 유효성 검사
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
+    }
+    
+    // MARK: - 얼럿창 표시 메서드
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
+}
+
+
+
+
+
+// MARK: - delegate 설정
+extension LoginViewController: UITextFieldDelegate {
     // 텍스트 필드 delegate 메서드 구현
     
     // 텍스트 필드가 포커스를 얻었을 때 호출되는 메서드
