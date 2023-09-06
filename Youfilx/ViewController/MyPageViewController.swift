@@ -120,6 +120,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             fatalError("ERROR")
         }
         cell.backgroundColor = .systemBackground
+        cell.selectionStyle = .none
         let image = setting[indexPath.row].0
         let label = setting[indexPath.row].1
         cell.configure(image: image, label: label)
@@ -128,5 +129,21 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 50
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch indexPath.row {
+        case 0:
+            navigationController?.pushViewController(MyPageUserInfoViewController(), animated: true)
+        case 1:
+            navigationController?.pushViewController(MyPageFavoriteViewController(), animated: true)
+        case 2:
+            navigationController?.pushViewController(MyPageHistoryViewController(), animated: true)
+        case 3:
+            break
+            // Logout Action
+        default:
+            break
+        }
     }
 }

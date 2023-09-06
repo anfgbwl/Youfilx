@@ -54,8 +54,5 @@ class MyPageViewCell: UITableViewCell {
             label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
             label.leadingAnchor.constraint(equalTo: self.image.trailingAnchor, constant: 20),
         ])
-        
-        print("🚨🚨🚨🚨🚨 image.frame.size: \(image.frame.size)")
-        
     }
 }
