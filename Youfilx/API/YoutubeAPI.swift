@@ -13,6 +13,7 @@ enum YoutubeAPI: TargetType {
     case videoInformation(_ videoId: String)
     case commentThread(_ videoId: String, _ nextPageToken: String? = nil)
     case commentsList(_ commentId: String, _ nextPageToken: String? = nil)
+    case channel(_ channelId: String)
     
     var baseURL: String {
         return API.baseUrl
@@ -26,19 +27,21 @@ enum YoutubeAPI: TargetType {
             return "commentThreads"
         case .commentsList:
             return "comments"
+        case .channel:
+            return "channels"
         }
     }
     
     var httpMethod: Alamofire.HTTPMethod {
         switch self {
-        case .videoInformation, .commentThread, .commentsList:
+        case .videoInformation, .commentThread, .commentsList, .channel:
             return .get
         }
     }
     
     var headers: Alamofire.HTTPHeaders? {
         switch self {
-        case .videoInformation, .commentThread, .commentsList:
+        case .videoInformation, .commentThread, .commentsList, .channel:
             return [
                 "Content-Type": "application/json"
             ]
@@ -70,12 +73,18 @@ enum YoutubeAPI: TargetType {
                 "maxResults": "10",
                 "pageToken": nextPageToken ?? ""
             ]
+        case let .channel(channelId):
+            return [
+                "id": channelId,
+                "key": API.key,
+                "part": "snippet%2Cstatistics"
+            ]
         }
     }
     
     var body: Encodable? {
         switch self {
-        case .videoInformation, .commentThread, .commentsList:
+        case .videoInformation, .commentThread, .commentsList, .channel:
             return nil
         }
     }
