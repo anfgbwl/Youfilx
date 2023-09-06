@@ -20,6 +20,42 @@ final class DetailPageViewController: UIViewController {
         return stackView
     }()
     private lazy var youtubeView = YoutubeView()
+    private lazy var videoInformationStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.backgroundColor = .black
+        stackView.distribution = .fill
+        stackView.alignment = .leading
+        stackView.axis = .vertical
+        stackView.spacing = 10
+        return stackView
+    }()
+    private lazy var videoTitleLabel: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.textColor = .white
+        uiLabel.font = .systemFont(ofSize: 26, weight: .bold)
+        return uiLabel
+    }()
+    private lazy var videoInformationsStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.distribution = .fillProportionally
+        stackView.axis = .horizontal
+        stackView.spacing = 10
+        return stackView
+    }()
+    private lazy var videoInformationLabel: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.textColor = .white
+        uiLabel.font = .systemFont(ofSize: 12, weight: .light)
+        return uiLabel
+    }()
+    private lazy var videoMoreInformationLabel: UILabel = {
+        let uiLabel = UILabel()
+        uiLabel.text = "더보기"
+        uiLabel.textColor = .white
+        uiLabel.font = .systemFont(ofSize: 14, weight: .regular)
+        return uiLabel
+    }()
+    
     private let videoId: String
     
     init(videoId: String) {
@@ -39,6 +75,9 @@ extension DetailPageViewController {
 
         configure()
 
+        videoTitleLabel.text = "타이틀"
+        videoInformationLabel.text = "조회수 4.8만회 1년 전 #Lovely #Haruy"
+        
     }
 }
 
@@ -48,8 +87,15 @@ extension DetailPageViewController {
         view.backgroundColor = .white
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
-        [youtubeView].forEach {
+
+        [youtubeView, videoInformationStackView].forEach {
             stackView.addArrangedSubview($0)
+        }
+        [videoInformationLabel, videoMoreInformationLabel].forEach {
+            videoInformationsStackView.addArrangedSubview($0)
+        }
+        [videoTitleLabel, videoInformationsStackView].forEach {
+            videoInformationStackView.addArrangedSubview($0)
         }
         
         layout()
