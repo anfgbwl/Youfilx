@@ -42,9 +42,9 @@ public class YoutubeView: UIView {
         "onError": "onPlayerError" as AnyObject
     ]
 
-    var state: ((YoutubeViewState) -> Void)? = nil
+    public var state: ((YoutubeViewState) -> Void)? = nil
     
-    init() {
+    public init() {
         super.init(frame: .zero)
     }
     
@@ -52,7 +52,7 @@ public class YoutubeView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func loadYoutube(videoId: String, startTime: Int = 0, isAutoPlay: Bool = false) {
+    public func loadYoutube(videoId: String, startTime: Int = 0, isAutoPlay: Bool = false) {
         do {
             let youtubeHTML = try loadYoutubeHTML(
                 videoId: videoId,
