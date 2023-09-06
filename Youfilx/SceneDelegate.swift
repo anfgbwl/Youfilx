@@ -16,16 +16,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let scene = (scene as? UIWindowScene) else { return }
         window = UIWindow(frame: scene.coordinateSpace.bounds)
         window?.windowScene = scene
-        
         let loginViewController = LoginViewController()
-        
         let navigationController = UINavigationController(rootViewController: loginViewController)
-
-        
         loginViewController.loginCompletion = { [weak self] in
             self?.showTabBarController()
         }
-        
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
     }
@@ -36,11 +31,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         let homeViewController = HomeViewController()
         let myPageViewController = MyPageViewController()
-
         
         let vc1 = UINavigationController(rootViewController: homeViewController)
         let vc2 = UINavigationController(rootViewController: myPageViewController)
-
         
         vc1.tabBarItem.image = UIImage(systemName: "house")
         vc1.tabBarItem.selectedImage = UIImage(systemName: "house.fill")

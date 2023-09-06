@@ -86,7 +86,6 @@ class HomeViewController: UIViewController {
             }
             self?.isLoadingData = false
         }
-        
     }
     
     private func loadMoreData() {
@@ -99,6 +98,7 @@ class HomeViewController: UIViewController {
         
         // Navigation Bar
         navigationController?.hidesBarsOnSwipe = true
+        navigationController?.navigationBar.isTranslucent = false
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "youflix_logo"), style: .plain, target: nil, action: nil)
         navigationItem.leftBarButtonItem?.tintColor = .red
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(didTapSearch))
