@@ -11,6 +11,7 @@ import Alamofire
 class HomeViewController: UIViewController {
     
     // MARK: - Variables
+    private var isLoadingData = false
     private var nextPageToken: String?
     static var videoIds: [String] = []
     private var thumbnails: [UIImage] = []
@@ -41,6 +42,8 @@ class HomeViewController: UIViewController {
     
     // MARK: - YouTube Video Load
     private func loadVideo(pageToken: String? = nil) {
+        guard !isLoadingData else { return }
+        isLoadingData = true
         APIManager.shared.fetchVideos(pageToken: nextPageToken ?? "") { [weak self] result in
             switch result {
             case .success(let data):
@@ -48,6 +51,7 @@ class HomeViewController: UIViewController {
                    let items = json["items"] as? [[String:Any]] {
                     for item in items {
                         if let id = item["id"] as? String,
+                           !HomeViewController.videoIds.contains(id),
                            let snippet = item["snippet"] as? [String:Any],
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String:Any],
@@ -75,10 +79,12 @@ class HomeViewController: UIViewController {
                         }
                     }
                     self?.nextPageToken = json["nextPageToken"] as? String
+                    self?.loadVideo(pageToken: self?.nextPageToken)
                 }
             case .failure(let error):
                 print(error)
             }
+            self?.isLoadingData = false
         }
         
     }
@@ -136,7 +142,7 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
         let scrollViewHeight = scrollView.frame.size.height
         
         if offsetY > contentHeight - scrollViewHeight {
-            loadMoreData()
+            if !isLoadingData { loadMoreData() }
         }
     }
 }

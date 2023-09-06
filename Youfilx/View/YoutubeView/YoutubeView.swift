@@ -162,7 +162,7 @@ public class YoutubeView: UIView {
     fileprivate func eventProcess(_ url: URL) {
         guard let stateCode = url.absoluteString.components(separatedBy: "=").last else { return }
         guard let currentState = YoutubeViewState.init(rawValue: stateCode) else { return }
-        state!(currentState)
+        state?(currentState)
     }
     
 }

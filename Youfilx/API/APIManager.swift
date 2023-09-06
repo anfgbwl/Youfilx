@@ -17,7 +17,6 @@ class APIManager {
         let apiParam = [
             "part": "snippet",
             "chart": "mostPopular",
-            "maxResult": 500,
             "regionCode": "KR",
             "key": API.key,
             "pageToken": "\(pageToken)"
@@ -27,7 +26,7 @@ class APIManager {
             .validate()
             .responseJSON { response in
                 completion(response.result)
-//                debugPrint(response)
+                debugPrint(response)
             }
     }
 }
