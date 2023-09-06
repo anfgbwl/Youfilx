@@ -55,8 +55,8 @@ class HomeViewController: UIViewController {
                            let snippet = item["snippet"] as? [String:Any],
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String:Any],
-                           let standard = thumbnails["standard"] as? [String:Any],
-                           let thumbnailUrl = standard["url"] as? String,
+                           let maxres = thumbnails["maxres"] as? [String:Any],
+                           let thumbnailUrl = maxres["url"] as? String,
                            let user = snippet["channelTitle"] as? String {
                             AF.request(thumbnailUrl).responseData { response in
                                 switch response.result {
@@ -95,12 +95,16 @@ class HomeViewController: UIViewController {
   
     // MARK: - setupUI
     private func setupUI() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         
-        navigationController?.navigationBar.prefersLargeTitles = true
+        // Navigation Bar
         navigationController?.hidesBarsOnSwipe = true
-        self.navigationItem.title = "삼인조"
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "youflix_logo"), style: .plain, target: nil, action: nil)
+        navigationItem.leftBarButtonItem?.tintColor = .red
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(didTapSearch))
+        navigationItem.rightBarButtonItem?.tintColor = .white
         
+        // CollectionView
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -110,6 +114,10 @@ class HomeViewController: UIViewController {
         collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
         collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
         ])
+    }
+    
+    @objc private func didTapSearch() {
+        
     }
 
 }

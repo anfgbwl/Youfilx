@@ -26,6 +26,7 @@ class HomeViewCell: UICollectionViewCell {
         iv.contentMode = .scaleAspectFill
         iv.image = UIImage(systemName: "person")
         iv.tintColor = .white
+        iv.backgroundColor = .white
         iv.clipsToBounds = true
         return iv
     }()
@@ -42,7 +43,7 @@ class HomeViewCell: UICollectionViewCell {
     private let user: UILabel = {
         let name = UILabel()
         name.text = "nickname"
-        name.textColor = .darkGray
+        name.textColor = .secondaryLabel
         let newFont = UIFont.systemFont(ofSize: 13.0)
         name.font = newFont
         name.textAlignment = .left
@@ -103,20 +104,3 @@ class HomeViewCell: UICollectionViewCell {
         self.userImage.image = nil
     }
 }
-
-
-/*
- 
- 셀에 들어가야 하는 내용
- 1. 썸네일: items - snippet - thumbnails - standard - url/width/height
- 2. 채널 프로필: items - snippet -
- 3. 타이틀: items - snippet - title
- 4. 채널 유저: items - snippet - channelTitle
- 5. 조회수: 동영상 id로 가져와야함
- 6. 업로드일자: items - snippet - publishedAt
- 
- [디테일페이지로 넘길 때 동영상 id 넘겨야 함!]
- items - id
- 
- */
-

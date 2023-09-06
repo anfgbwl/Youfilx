@@ -50,6 +50,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         vc2.title = "MY PAGE"
 
         tabBarController.viewControllers = [vc1, vc2]
+        tabBarController.tabBar.backgroundColor = .black
+        tabBarController.tabBar.tintColor = .white
+        tabBarController.tabBar.isTranslucent = false
 
         window?.rootViewController = tabBarController
         window?.makeKeyAndVisible()
