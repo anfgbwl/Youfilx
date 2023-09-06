@@ -4,10 +4,7 @@ class LoginViewController: UIViewController {
     
     var loginCompletion: (() -> Void)?
 
-    
-    // 회원가입 성공 후에 로그인 화면으로 전달할 이메일과 비밀번호 프로퍼티
 
-    
     // MARK: - 로고 타이틀
     private lazy var logoImageView: UIImageView = {
         let image = UIImage(named: "youflix_logo") // 이미지 파일 이름
@@ -202,9 +199,9 @@ class LoginViewController: UIViewController {
             // 로그인 성공 시 사용자 정보를 homeViewController에 전달
             let homeViewController = HomeViewController()
             homeViewController.user = savedUser
-            self.addChild(homeViewController)
-            self.view.addSubview(homeViewController.view)
-            homeViewController.didMove(toParent: self)
+            navigationController?.pushViewController(homeViewController, animated: true)
+            
+            loginCompletion?()
         } else {
             showAlert(title: "로그인 실패", message: "이메일 또는 비밀번호가 일치하지 않습니다.")
         }

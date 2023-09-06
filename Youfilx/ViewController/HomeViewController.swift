@@ -40,9 +40,6 @@ class HomeViewController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         
-        print(user)
-        // 네비게이션 바 숨기기
-            navigationController?.setNavigationBarHidden(true, animated: false)
         
         loadVideo()
     }
