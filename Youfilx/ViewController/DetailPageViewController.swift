@@ -10,15 +10,13 @@ import UIKit
 final class DetailPageViewController: UIViewController {
     
     private lazy var scrollView = UIScrollView()
-    private lazy var stackView: UIStackView = {
-       let stackView = UIStackView()
-        stackView.distribution = .fill
-        stackView.axis = .vertical
-        stackView.spacing = 10
-        stackView.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
-        stackView.isLayoutMarginsRelativeArrangement = true
-        return stackView
-    }()
+    private lazy var stackView = UIStackView().and {
+        $0.distribution = .fill
+        $0.axis = .vertical
+        $0.spacing = 10
+        $0.layoutMargins = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
+        $0.isLayoutMarginsRelativeArrangement = true
+    }
     private lazy var youtubeView = YoutubeView()
     private lazy var videoInformationStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
         //TODO: 자세한 정보 보여주는 뷰
@@ -29,32 +27,24 @@ final class DetailPageViewController: UIViewController {
         $0.axis = .vertical
         $0.spacing = 10
     }
-    private lazy var videoTitleLabel: UILabel = {
-        let uiLabel = UILabel()
-        uiLabel.textColor = .white
-        uiLabel.font = .systemFont(ofSize: 26, weight: .bold)
-        return uiLabel
-    }()
-    private lazy var videoInformationsStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.distribution = .fillProportionally
-        stackView.axis = .horizontal
-        stackView.spacing = 10
-        return stackView
-    }()
-    private lazy var videoInformationLabel: UILabel = {
-        let uiLabel = UILabel()
-        uiLabel.textColor = .white
-        uiLabel.font = .systemFont(ofSize: 12, weight: .light)
-        return uiLabel
-    }()
-    private lazy var videoMoreInformationLabel: UILabel = {
-        let uiLabel = UILabel()
-        uiLabel.text = "더보기"
-        uiLabel.textColor = .white
-        uiLabel.font = .systemFont(ofSize: 14, weight: .regular)
-        return uiLabel
-    }()
+    private lazy var videoTitleLabel = UILabel().and {
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 26, weight: .bold)
+    }
+    private lazy var videoInformationsStackView = UIStackView().and {
+        $0.distribution = .fillProportionally
+        $0.axis = .horizontal
+        $0.spacing = 10
+    }
+    private lazy var videoInformationLabel = UILabel().and {
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 12, weight: .light)
+    }
+    private lazy var videoMoreInformationLabel = UILabel().and {
+        $0.text = "더보기"
+        $0.textColor = .white
+        $0.font = .systemFont(ofSize: 14, weight: .regular)
+    }
     private lazy var videoMakerStackView = UIStackView().and {
         $0.alignment = .center
         $0.distribution = .fill
