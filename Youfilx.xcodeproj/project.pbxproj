@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3FAA95C92AA854A400075053 /* MyPageViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA95C82AA854A400075053 /* MyPageViewCell.swift */; };
+		3FAA95CB2AA86CDC00075053 /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FAA95CA2AA86CDC00075053 /* SearchViewController.swift */; };
 		3FF271D42AA597E7000A26F5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF271D32AA597E7000A26F5 /* AppDelegate.swift */; };
 		3FF271D62AA597E7000A26F5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF271D52AA597E7000A26F5 /* SceneDelegate.swift */; };
 		3FF271DD2AA597E8000A26F5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3FF271DC2AA597E8000A26F5 /* Assets.xcassets */; };
@@ -32,6 +34,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3FAA95C82AA854A400075053 /* MyPageViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyPageViewCell.swift; sourceTree = "<group>"; };
+		3FAA95CA2AA86CDC00075053 /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		3FF271D02AA597E7000A26F5 /* Youfilx.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Youfilx.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FF271D32AA597E7000A26F5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3FF271D52AA597E7000A26F5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -110,6 +114,7 @@
 				3FF271EE2AA59D65000A26F5 /* SignUpViewController.swift */,
 				3FF271F22AA59D96000A26F5 /* DetailPageViewController.swift */,
 				3FF271E92AA598DA000A26F5 /* MyPageViewController.swift */,
+				3FAA95CA2AA86CDC00075053 /* SearchViewController.swift */,
 				3FF271F42AA59DD6000A26F5 /* MyPageUserInfoViewController.swift */,
 				3FF271F62AA59DE4000A26F5 /* MyPageFavoriteViewController.swift */,
 				3FF271FA2AA59E10000A26F5 /* MyPageHistoryViewController.swift */,
@@ -131,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				3FF272082AA5CC13000A26F5 /* HomeViewCell.swift */,
+				3FAA95C82AA854A400075053 /* MyPageViewCell.swift */,
 			);
 			path = Cell;
 			sourceTree = "<group>";
@@ -245,9 +251,11 @@
 				3FF271EF2AA59D65000A26F5 /* SignUpViewController.swift in Sources */,
 				3FF272012AA5A622000A26F5 /* Video.swift in Sources */,
 				3FF271EA2AA598DA000A26F5 /* MyPageViewController.swift in Sources */,
+				3FAA95CB2AA86CDC00075053 /* SearchViewController.swift in Sources */,
 				3FF271F72AA59DE4000A26F5 /* MyPageFavoriteViewController.swift in Sources */,
 				3FF272102AA6C0F5000A26F5 /* API.swift in Sources */,
 				3FF271F52AA59DD6000A26F5 /* MyPageUserInfoViewController.swift in Sources */,
+				3FAA95C92AA854A400075053 /* MyPageViewCell.swift in Sources */,
 				3FF271D42AA597E7000A26F5 /* AppDelegate.swift in Sources */,
 				F1FA0FA42AA73CF300B5BC5A /* YoutubeView.swift in Sources */,
 				3FF271D62AA597E7000A26F5 /* SceneDelegate.swift in Sources */,
