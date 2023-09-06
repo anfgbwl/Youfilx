@@ -43,6 +43,7 @@ class SearchViewController: UIViewController {
         setupUI()
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
+        searchBar.delegate = self
     }
     
     // MARK: - YouTube Video Load
@@ -55,13 +56,14 @@ class SearchViewController: UIViewController {
                 if let json = data as? [String:Any],
                    let items = json["items"] as? [[String:Any]] {
                     for item in items {
-                        if let id = item["id"] as? String,
+                        if let videoId = item["id"] as? [String:Any],
+                           let id = videoId["videoId"] as? String,
                            !SearchViewController.videoIds.contains(id),
                            let snippet = item["snippet"] as? [String:Any],
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String:Any],
-                           let maxres = thumbnails["maxres"] as? [String:Any],
-                           let thumbnailUrl = maxres["url"] as? String,
+                           let medium = thumbnails["medium"] as? [String:Any],
+                           let thumbnailUrl = medium["url"] as? String,
                            let user = snippet["channelTitle"] as? String {
                             AF.request(thumbnailUrl).responseData { response in
                                 switch response.result {
@@ -111,7 +113,7 @@ class SearchViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-        collectionView.topAnchor.constraint(equalTo: self.view.topAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
         collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
         collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
@@ -120,17 +122,13 @@ class SearchViewController: UIViewController {
 }
 
 extension SearchViewController: UISearchBarDelegate {
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        SearchViewController.searchText = searchText
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if let text = searchBar.text {
+            SearchViewController.searchText = text
+            print("검색어: \(SearchViewController.searchText)")
+        }
         loadVideos()
     }
-    
-//    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-//        if let text = searchBar.text {
-//            SearchViewController.searchText = text
-//            print("검색어: \(SearchViewController.searchText)")
-//        }
-//    }
 }
 
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
