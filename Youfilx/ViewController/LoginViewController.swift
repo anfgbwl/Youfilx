@@ -1,9 +1,12 @@
 import UIKit
 
 class LoginViewController: UIViewController {
-
+    
     var loginCompletion: (() -> Void)?
-    var signUpCompletion: (() -> Void)?
+
+    
+    // 회원가입 성공 후에 로그인 화면으로 전달할 이메일과 비밀번호 프로퍼티
+
     
     // MARK: - 로고 타이틀
     private lazy var logoImageView: UIImageView = {
@@ -80,7 +83,7 @@ class LoginViewController: UIViewController {
         let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName:"eye.fill"),for: .normal)
         button.tintColor = .white
-
+        
         return button
     }()
     
@@ -93,8 +96,8 @@ class LoginViewController: UIViewController {
         button.setTitle("로그인", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.isEnabled = false // 초기 비활성화
-
-
+        
+        
         return button
     }()
     
@@ -114,13 +117,16 @@ class LoginViewController: UIViewController {
         button.backgroundColor = .clear
         button.setTitle("회원가입", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-
+        
         return button
     }()
     
     // 이메일 뷰와 패스워드 뷰, 로그인 버튼 높이 설정
     private let viewHeight: CGFloat = 48
     
+    // MARK: - 유효성 검사에 사용할 정규식
+    private let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
+    private let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -129,7 +135,7 @@ class LoginViewController: UIViewController {
         signUpButton.addTarget(self, action: #selector(moveToSignUpViewController), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         passwordCheckButton.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
-
+        
     }
     
     
@@ -178,19 +184,37 @@ class LoginViewController: UIViewController {
             signUpButton.heightAnchor.constraint(equalToConstant: viewHeight)
         ])
     }
-
+    
     // MARK: - 버튼 관련 메서드
     
     @objc func loginButtonTapped() {
-        loginCompletion?()
-        let homeViewController = HomeViewController()
-        navigationController?.pushViewController(homeViewController, animated: true)
+        guard let enteredEmail = emailTextField.text, !enteredEmail.isEmpty,
+              let enteredPassword = passwordTextField.text, !enteredPassword.isEmpty,
+              let savedUser = loadUserFromUserDefaults() else { return }
+        
+        // 이메일 형식 검증
+        if !isValidEmail(enteredEmail) {
+            showAlert(title: "이메일 형식 오류", message: "올바른 이메일 주소를 입력하세요.")
+            return
+        }
+        
+        if enteredEmail == savedUser.id && enteredPassword == savedUser.password {
+            // 로그인 성공 시 사용자 정보를 homeViewController에 전달
+            let homeViewController = HomeViewController()
+            homeViewController.user = savedUser
+            self.addChild(homeViewController)
+            self.view.addSubview(homeViewController.view)
+            homeViewController.didMove(toParent: self)
+        } else {
+            showAlert(title: "로그인 실패", message: "이메일 또는 비밀번호가 일치하지 않습니다.")
+        }
     }
     
     
+
+    
     @objc func moveToSignUpViewController() {
         print("회원가입 버튼 눌림")
-        signUpCompletion?()
         let signUpViewController = SignUpViewController()
         navigationController?.pushViewController(signUpViewController, animated: true)
     }
@@ -202,7 +226,7 @@ class LoginViewController: UIViewController {
         let imageName = passwordTextField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill"
         passwordCheckButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
-
+    
     @objc func textFieldChanged(_ textField: UITextField) {
         if textField.text?.count == 1 {
             if textField.text?.first == " " {
@@ -221,8 +245,22 @@ class LoginViewController: UIViewController {
         loginButton.isEnabled = true
     }
     
+    // MARK: - 정규식 유효성 검사
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
+    }
     
+    // MARK: - 얼럿창 표시 메서드
+    private func showAlert(title: String, message: String) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "확인", style: .default, handler: nil)
+        alert.addAction(okAction)
+        present(alert, animated: true, completion: nil)
+    }
 }
+
+
 
 
 
