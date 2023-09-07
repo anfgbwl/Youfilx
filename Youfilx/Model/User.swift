@@ -2,8 +2,8 @@ import Foundation
 
 struct User: Codable {
     let id: String
-    let password: String
-    let nickname: String
+    var password: String
+    var nickname: String
     var image: Data?
     var watchHistory: [Video]?
     var favoriteVideos: [Video]?

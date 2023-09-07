@@ -40,9 +40,9 @@ class HomeViewCell: UICollectionViewCell {
         return title
     }()
     
-    private let user: UILabel = {
+    private let channelTitle: UILabel = {
         let name = UILabel()
-        name.text = "nickname"
+        name.text = "channelName"
         name.textColor = .secondaryLabel
         let newFont = UIFont.systemFont(ofSize: 13.0)
         name.font = newFont
@@ -50,14 +50,102 @@ class HomeViewCell: UICollectionViewCell {
         return name
     }()
     
+    private let viewCount: UILabel = {
+        let count = UILabel()
+        count.text = "viewCount"
+        count.textColor = .secondaryLabel
+        let newFont = UIFont.systemFont(ofSize: 13.0)
+        count.font = newFont
+        count.textAlignment = .left
+        return count
+    }()
+    
+    private let publishedAt: UILabel = {
+        let date = UILabel()
+        date.text = "nickname"
+        date.textColor = .secondaryLabel
+        let newFont = UIFont.systemFont(ofSize: 13.0)
+        date.font = newFont
+        date.textAlignment = .left
+        return date
+    }()
+    
+    private lazy var labelStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [channelTitle, viewCount, publishedAt])
+        stackView.axis = .horizontal
+        stackView.alignment = .center
+        stackView.spacing = 5
+        return stackView
+    }()
+    
+    private lazy var titleStackView: UIStackView = {
+        let stackView = UIStackView(arrangedSubviews: [title, labelStackView])
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 3
+        return stackView
+    }()
+    
     
     // MARK: - Configure
-    public func configure(video: UIImage, image: UIImage, title: String, name: String) {
+    public func configure(video: UIImage, image: UIImage, title: String, channelTitle: String, viewCount: String, publishedAt: String) {
         self.thumbnailImage.image = video
         self.userImage.image = image
         self.title.text = title
-        self.user.text = name
+        self.channelTitle.text = channelTitle
+        self.viewCount.text = customFormattedViewsCount(viewCount)
+        self.publishedAt.text = timeAgoSinceDate(publishedAt)
         self.setupUI()
+    }
+    
+    // MARK: - ViewCount Format
+    private func customFormattedViewsCount(_ viewsCount: String) -> String {
+        if let viewsCount = Int(viewsCount) {
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            numberFormatter.maximumFractionDigits = 1
+            
+            if viewsCount >= 10000 {
+                let viewsInTenThousand = Double(viewsCount) / 10000.0
+                return numberFormatter.string(from: NSNumber(value: viewsInTenThousand))! + "만회"
+            } else if viewsCount >= 1000 {
+                let viewsInThousand = Double(viewsCount) / 1000.0
+                return numberFormatter.string(from: NSNumber(value: viewsInThousand))! + "천회"
+            } else {
+                return "\(viewsCount)회"
+            }
+        } else {
+            return "조회수 로드 오류"
+        }
+    }
+    
+    // MARK: - Date Format
+    private func timeAgoSinceDate(_ isoDateString: String) -> String {
+        let dateFormatter = ISO8601DateFormatter()
+        
+        guard let date = dateFormatter.date(from: isoDateString) else {
+            return "Invalid Date"
+        }
+        
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date, to: currentDate)
+        
+        if let year = components.year, year > 0 {
+            return "\(year)년 전"
+        } else if let month = components.month, month > 0 {
+            return "\(month)개월 전"
+        } else if let day = components.day, day > 0 {
+            return "\(day)일 전"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour)시간 전"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute)분 전"
+        } else if let second = components.second, second > 0 {
+            return "\(second)초 전"
+        } else {
+            return "방금 전"
+        }
     }
     
     // MARK: - Layout
@@ -70,12 +158,10 @@ class HomeViewCell: UICollectionViewCell {
     private func setupUI() {
         self.addSubview(thumbnailImage)
         self.addSubview(userImage)
-        self.addSubview(title)
-        self.addSubview(user)
+        self.addSubview(titleStackView)
         thumbnailImage.translatesAutoresizingMaskIntoConstraints = false
         userImage.translatesAutoresizingMaskIntoConstraints = false
-        title.translatesAutoresizingMaskIntoConstraints = false
-        user.translatesAutoresizingMaskIntoConstraints = false
+        titleStackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             thumbnailImage.topAnchor.constraint(equalTo: self.topAnchor),
@@ -88,13 +174,9 @@ class HomeViewCell: UICollectionViewCell {
             userImage.widthAnchor.constraint(equalToConstant: 50),
             userImage.heightAnchor.constraint(equalToConstant: 50),
             
-            title.topAnchor.constraint(equalTo: thumbnailImage.bottomAnchor, constant: 10),
-            title.leadingAnchor.constraint(equalTo: userImage.trailingAnchor, constant: 10),
-            title.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-            
-            user.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 3),
-            user.leadingAnchor.constraint(equalTo: userImage.trailingAnchor, constant: 10),
-            user.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            titleStackView.topAnchor.constraint(equalTo: thumbnailImage.bottomAnchor, constant: 10),
+            titleStackView.leadingAnchor.constraint(equalTo: userImage.trailingAnchor, constant: 10),
+            titleStackView.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
         ])
     }
     

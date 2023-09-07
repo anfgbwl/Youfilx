@@ -137,12 +137,12 @@
 			isa = PBXGroup;
 			children = (
 				3FF272072AA5CBE8000A26F5 /* Cell */,
-				3FF271E72AA598C4000A26F5 /* HomeViewController.swift */,
 				3FF271EB2AA59D49000A26F5 /* LoginViewController.swift */,
 				3FF271EE2AA59D65000A26F5 /* SignUpViewController.swift */,
+				3FF271E72AA598C4000A26F5 /* HomeViewController.swift */,
+				3FAA95CA2AA86CDC00075053 /* SearchViewController.swift */,
 				3FF271F22AA59D96000A26F5 /* DetailPageViewController.swift */,
 				3FF271E92AA598DA000A26F5 /* MyPageViewController.swift */,
-				3FAA95CA2AA86CDC00075053 /* SearchViewController.swift */,
 				3FF271F42AA59DD6000A26F5 /* MyPageUserInfoViewController.swift */,
 				3FF271F62AA59DE4000A26F5 /* MyPageFavoriteViewController.swift */,
 				3FF271FA2AA59E10000A26F5 /* MyPageHistoryViewController.swift */,
