@@ -60,7 +60,7 @@ class SearchViewController: UIViewController {
             guard let self = self else { return }
             switch response.result {
             case .success(let data):
-                print("searchVideos request: success")
+                print("✅ searchVideos request: success")
                 if let json = data as? [String: Any],
                    let items = json["items"] as? [[String: Any]] {
                     for item in items {
@@ -91,10 +91,10 @@ class SearchViewController: UIViewController {
                                             self.collectionView.reloadData()
                                         }
                                     } else {
-                                        print("Failed to convert data to UIImage")
+                                        print("🚫 Failed to convert data to UIImage")
                                     }
                                 case .failure(let error):
-                                    print("Image download error: \(error)")
+                                    print("🚫 Image download error: \(error)")
                                 }
                             }
                         }
@@ -102,10 +102,9 @@ class SearchViewController: UIViewController {
                     self.nextPageToken = json["nextPageToken"] as? String
                 }
             case .failure(let error):
-                print(error)
+                print("🚫 \(error)")
             }
             self.isLoadingData = false
-            print("titles: \(titles)")
         }
     }
     
@@ -116,14 +115,14 @@ class SearchViewController: UIViewController {
             guard let self = self else { return }
             switch response.result {
             case .success(let data):
-                print("searchVideoLoad request: success")
+                print("✅ searchVideoLoad request: success")
                 if let videoInfo = data as? [String: Any],
                    let statistics = videoInfo["statistics"] as? [String: Any],
                    let viewCount = statistics["viewCount"] as? String {
                     self.viewCounts.append(viewCount)
                 }
             case .failure(let error):
-                print("조회수 정보 로드 오류: \(error)")
+                print("🚫 searchVideoLoad request: \(error)")
             }
             
         }
@@ -159,7 +158,7 @@ extension SearchViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if let text = searchBar.text {
             SearchViewController.searchText = text
-            print("검색어: \(SearchViewController.searchText)")
+            print("🔍 검색어: \(SearchViewController.searchText)")
         }
         loadVideo()
     }

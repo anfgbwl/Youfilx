@@ -83,10 +83,10 @@ class HomeViewController: UIViewController {
                                             self.collectionView.reloadData()
                                         }
                                     } else {
-                                        print("Failed to convert data to UIImage")
+                                        print("🚫 Failed to convert data to UIImage")
                                     }
                                 case .failure(let error):
-                                    print("Image download error: \(error)")
+                                    print("🚫 Image download error: \(error)")
                                 }
                             }
                         }
@@ -94,7 +94,7 @@ class HomeViewController: UIViewController {
                     self.nextPageToken = json["nextPageToken"] as? String
                 }
             case .failure(let error):
-                print(error)
+                print("🚫 \(error)")
             }
             self.isLoadingData = false
         }
