@@ -47,7 +47,7 @@ class SearchViewController: UIViewController {
     }
     
     // MARK: - YouTube Video Load
-    private func loadVideos(pageToken: String? = nil) {
+    private func loadVideo(pageToken: String? = nil) {
         guard !isLoadingData else { return }
         isLoadingData = true
         APIManager.shared.searchFetchVideos(pageToken: nextPageToken ?? "") { [weak self] result in
@@ -86,7 +86,7 @@ class SearchViewController: UIViewController {
                         }
                     }
                     self?.nextPageToken = json["nextPageToken"] as? String
-                    self?.loadVideos(pageToken: self?.nextPageToken)
+                    self?.loadVideo(pageToken: self?.nextPageToken)
                 }
             case .failure(let error):
                 print(error)
@@ -96,7 +96,7 @@ class SearchViewController: UIViewController {
     }
     
     private func loadMoreData() {
-        loadVideos(pageToken: nextPageToken)
+        loadVideo(pageToken: nextPageToken)
     }
     
     // MARK: - setupUI
@@ -113,7 +113,7 @@ class SearchViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         collectionView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
         collectionView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
         collectionView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
@@ -127,7 +127,7 @@ extension SearchViewController: UISearchBarDelegate {
             SearchViewController.searchText = text
             print("검색어: \(SearchViewController.searchText)")
         }
-        loadVideos()
+        loadVideo()
     }
 }
 

@@ -9,6 +9,9 @@ import UIKit
 
 class MyPageViewController: UIViewController {
     
+    // 사용자 정보
+    var user: User = loadUserFromUserDefaults()!
+    
     // MARK: - Variables
     private let setting: [(UIImage, String)] = [
         (UIImage(systemName: "person.crop.circle")!, "회원정보"),
@@ -76,12 +79,22 @@ class MyPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        loadAccount()
         setupUI()
         tableView.delegate = self
         tableView.dataSource = self
     }
     
     // MARK: - Load Account
+    private func loadAccount() {
+        if let imageData = user.image {
+            if let profileImage = UIImage(data: imageData) {
+                self.profileImage.image = profileImage
+            }
+        }
+        self.profileName.text = user.nickname
+        self.profileId.text = user.id
+    }
     
     // MARK: - setupUI
     private func setupUI() {
