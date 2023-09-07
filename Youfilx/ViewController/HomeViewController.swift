@@ -11,7 +11,7 @@ import Alamofire
 class HomeViewController: UIViewController {
     
     // 사용자 정보
-    var user: User?
+    var user: User = loadUserFromUserDefaults()!
     
     // MARK: - Variables
     private var isLoadingData = false
@@ -39,8 +39,6 @@ class HomeViewController: UIViewController {
         setupUI()
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
-        
-        
         loadVideo()
     }
     
@@ -103,10 +101,15 @@ class HomeViewController: UIViewController {
         // Navigation Bar
         navigationController?.hidesBarsOnSwipe = true
         navigationController?.navigationBar.isTranslucent = false
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "youflix_logo"), style: .plain, target: nil, action: nil)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(named: "youflix_logo"), style: .plain, target: self, action: #selector(didTapLogo))
         navigationItem.leftBarButtonItem?.tintColor = .red
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(didTapSearch))
-        navigationItem.rightBarButtonItem?.tintColor = .white
+        
+        let firstButton = UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: #selector(didTapSearch))
+        firstButton.tintColor = .white
+        let secondButton = UIBarButtonItem(title: "\(user.nickname)님", style: .plain, target: nil, action: nil)
+        secondButton.tintColor = .white
+        secondButton.isSelected = false
+        navigationItem.rightBarButtonItems = [firstButton, secondButton]
         
         // CollectionView
         self.view.addSubview(collectionView)
@@ -120,7 +123,13 @@ class HomeViewController: UIViewController {
         ])
     }
     
+    @objc private func didTapLogo() {
+        print("☝️ Logo tapped!")
+        collectionView.setContentOffset(CGPoint(x: 0, y: 0), animated: true)
+    }
+    
     @objc private func didTapSearch() {
+        print("☝️ SearchButton tapped!")
         navigationController?.pushViewController(SearchViewController(), animated: true)
     }
 

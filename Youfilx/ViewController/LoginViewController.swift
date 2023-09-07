@@ -196,7 +196,7 @@ class LoginViewController: UIViewController {
         }
         
         if enteredEmail == savedUser.id && enteredPassword == savedUser.password {
-            // 로그인 성공 시 사용자 정보를 homeViewController에 전달
+            // 로그인 성공 시 사용자 정보를 homeViewController에 전달 
             let homeViewController = HomeViewController()
             homeViewController.user = savedUser
             navigationController?.pushViewController(homeViewController, animated: true)

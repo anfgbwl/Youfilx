@@ -60,5 +60,3 @@ class APIManager {
         
     }
 }
-
-//search?part=snippet&maxResults=100&q=고양이
