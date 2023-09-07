@@ -77,5 +77,21 @@ struct VideoInformationSearchResponse: Decodable {
         }
 
     }
+    
+    func toVideoInformation() -> VideoInformation {
+        let item = items[0]
+        let snippet = item.snippet
+        let statics = item.statistics
+        return VideoInformation(
+            title: snippet.title,
+            createdAt: snippet.publishedAt,
+            tags: snippet.tags,
+            viewCount: Int(statics.viewCount) ?? 0,
+            commentCount: Int(statics.commentCount) ?? 0,
+            likeCount: Int(statics.likeCount) ?? 0,
+            channelId: snippet.channelId,
+            channelName: snippet.channelTitle
+        )
+    }
 
 }

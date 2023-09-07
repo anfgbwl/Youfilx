@@ -40,6 +40,7 @@
 		F13DF5B52AA88A97002F638B /* CommentThreadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5B42AA88A96002F638B /* CommentThreadResponse.swift */; };
 		F13DF5B72AA88DE3002F638B /* CommentsListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5B62AA88DE3002F638B /* CommentsListResponse.swift */; };
 		F14E09952AA8A15A001F8DA4 /* ChannelResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14E09942AA8A15A001F8DA4 /* ChannelResponse.swift */; };
+		F1F5C16C2AA9BB9900448C0D /* VideoInforation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */; };
 		F1FA0FA32AA73CF300B5BC5A /* YoutubePlayer.html in Resources */ = {isa = PBXBuildFile; fileRef = F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */; };
 		F1FA0FA42AA73CF300B5BC5A /* YoutubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */; };
 /* End PBXBuildFile section */
@@ -78,6 +79,7 @@
 		F13DF5B42AA88A96002F638B /* CommentThreadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentThreadResponse.swift; sourceTree = "<group>"; };
 		F13DF5B62AA88DE3002F638B /* CommentsListResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsListResponse.swift; sourceTree = "<group>"; };
 		F14E09942AA8A15A001F8DA4 /* ChannelResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelResponse.swift; sourceTree = "<group>"; };
+		F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoInforation.swift; sourceTree = "<group>"; };
 		F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = YoutubePlayer.html; sourceTree = "<group>"; };
 		F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -149,6 +151,7 @@
 		3FF271FD2AA5A48E000A26F5 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				F1F5C16A2AA9BB8B00448C0D /* Entity */,
 				F13DF5AE2AA866CF002F638B /* DTO */,
 				3FF271FE2AA5A4A3000A26F5 /* User.swift */,
 				DFC087E82AA830A7008C4818 /* UserManager.swift */,
@@ -203,6 +206,14 @@
 				F13DF5B22AA869A0002F638B /* Data+.swift */,
 			);
 			path = Extension;
+			sourceTree = "<group>";
+		};
+		F1F5C16A2AA9BB8B00448C0D /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */,
+			);
+			path = Entity;
 			sourceTree = "<group>";
 		};
 		F1FA0F9F2AA73CF300B5BC5A /* View */ = {
@@ -307,6 +318,7 @@
 				F14E09952AA8A15A001F8DA4 /* ChannelResponse.swift in Sources */,
 				DFC087E92AA830A7008C4818 /* UserManager.swift in Sources */,
 				F13DF5A72AA810D2002F638B /* CheckableButton.swift in Sources */,
+				F1F5C16C2AA9BB9900448C0D /* VideoInforation.swift in Sources */,
 				3FF272122AA6C233000A26F5 /* APIManager.swift in Sources */,
 				3FF271EF2AA59D65000A26F5 /* SignUpViewController.swift in Sources */,
 				F13DF5B32AA869A0002F638B /* Data+.swift in Sources */,

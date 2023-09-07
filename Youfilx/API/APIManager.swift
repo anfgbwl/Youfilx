@@ -8,6 +8,7 @@
 import Foundation
 import Alamofire
 
+@MainActor
 class APIManager {
     static let shared = APIManager()
     private init() {}
@@ -59,6 +60,7 @@ class APIManager {
             }
         
     }
+    
 }
 
 //search?part=snippet&maxResults=100&q=고양이
