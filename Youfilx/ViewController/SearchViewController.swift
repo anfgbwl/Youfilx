@@ -17,7 +17,9 @@ class SearchViewController: UIViewController {
     static var videoIds: [String] = []
     private var thumbnails: [UIImage] = []
     private var titles: [String] = []
-    private var users: [String] = []
+    private var channelTitles: [String] = []
+    private var viewCounts: [String] = []
+    private var publishedAts: [String] = []
 
     // MARK: - UI Components
     private let searchBar: UISearchBar = {
@@ -72,7 +74,7 @@ class SearchViewController: UIViewController {
                                         SearchViewController.videoIds.append(id)
                                         self?.thumbnails.append(image)
                                         self?.titles.append(title)
-                                        self?.users.append(user)
+                                        self?.channelTitles.append(user)
                                         DispatchQueue.main.async {
                                             self?.collectionView.reloadData()
                                         }
@@ -142,8 +144,10 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
         }
         let image = self.thumbnails[indexPath.row]
         let title = self.titles[indexPath.row]
-        let user = self.users[indexPath.row]
-        cell.configure(video: image, image: image, title: title, name: user)
+        let name = self.channelTitles[indexPath.row]
+        let count = self.viewCounts[indexPath.row]
+        let date = self.publishedAts[indexPath.row]
+        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
         return cell
     }
     
