@@ -19,7 +19,9 @@ class HomeViewController: UIViewController {
     static var videoIds: [String] = []
     private var thumbnails: [UIImage] = []
     private var titles: [String] = []
-    private var users: [String] = []
+    private var channelTitles: [String] = []
+    private var viewCounts: [String] = []
+    private var publishedAts: [String] = []
 
     // MARK: - UI Components
     private let collectionView: UICollectionView = {
@@ -46,47 +48,55 @@ class HomeViewController: UIViewController {
     private func loadVideo(pageToken: String? = nil) {
         guard !isLoadingData else { return }
         isLoadingData = true
-        APIManager.shared.fetchVideos(pageToken: nextPageToken ?? "") { [weak self] result in
-            switch result {
+
+        // YouTube API mostPopular 요청 생성
+        let request = YoutubeAPI.mostPopularVideos(pageToken)
+
+        AF.request(request).responseJSON { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
             case .success(let data):
-                if let json = data as? [String:Any],
-                   let items = json["items"] as? [[String:Any]] {
+                if let json = data as? [String: Any], let items = json["items"] as? [[String: Any]] {
                     for item in items {
                         if let id = item["id"] as? String,
                            !HomeViewController.videoIds.contains(id),
-                           let snippet = item["snippet"] as? [String:Any],
+                           let snippet = item["snippet"] as? [String: Any],
+                           let statistics = item["statistics"] as? [String: Any],
+                           let viewCount = statistics["viewCount"] as? String,
+                           let publishedAt = snippet["publishedAt"] as? String,
                            let title = snippet["title"] as? String,
-                           let thumbnails = snippet["thumbnails"] as? [String:Any],
-                           let maxres = thumbnails["maxres"] as? [String:Any],
+                           let thumbnails = snippet["thumbnails"] as? [String: Any],
+                           let maxres = thumbnails["maxres"] as? [String: Any],
                            let thumbnailUrl = maxres["url"] as? String,
-                           let user = snippet["channelTitle"] as? String {
+                           let channelTitle = snippet["channelTitle"] as? String {
                             AF.request(thumbnailUrl).responseData { response in
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
                                         HomeViewController.videoIds.append(id)
-                                        self?.thumbnails.append(image)
-                                        self?.titles.append(title)
-                                        self?.users.append(user)
+                                        self.thumbnails.append(image)
+                                        self.titles.append(title)
+                                        self.channelTitles.append(channelTitle)
+                                        self.viewCounts.append(viewCount)
+                                        self.publishedAts.append(publishedAt)
                                         DispatchQueue.main.async {
-                                            self?.collectionView.reloadData()
+                                            self.collectionView.reloadData()
                                         }
                                     } else {
-                                        print("Failed to convert data to UIImage")
+                                        print("🚫 Failed to convert data to UIImage")
                                     }
                                 case .failure(let error):
-                                    print("Image download error: \(error)")
+                                    print("🚫 Image download error: \(error)")
                                 }
                             }
                         }
                     }
-                    self?.nextPageToken = json["nextPageToken"] as? String
-                    self?.loadVideo(pageToken: self?.nextPageToken)
+                    self.nextPageToken = json["nextPageToken"] as? String
                 }
             case .failure(let error):
-                print(error)
+                print("🚫 \(error)")
             }
-            self?.isLoadingData = false
+            self.isLoadingData = false
         }
     }
     
@@ -146,8 +156,10 @@ extension HomeViewController: UICollectionViewDelegate, UICollectionViewDataSour
         }
         let image = self.thumbnails[indexPath.row]
         let title = self.titles[indexPath.row]
-        let user = self.users[indexPath.row]
-        cell.configure(video: image, image: image, title: title, name: user)
+        let name = self.channelTitles[indexPath.row]
+        let count = self.viewCounts[indexPath.row]
+        let date = self.publishedAts[indexPath.row]
+        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
         return cell
     }
     
