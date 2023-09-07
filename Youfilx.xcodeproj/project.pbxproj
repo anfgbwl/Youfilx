@@ -40,6 +40,7 @@
 		F13DF5B52AA88A97002F638B /* CommentThreadResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5B42AA88A96002F638B /* CommentThreadResponse.swift */; };
 		F13DF5B72AA88DE3002F638B /* CommentsListResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F13DF5B62AA88DE3002F638B /* CommentsListResponse.swift */; };
 		F14E09952AA8A15A001F8DA4 /* ChannelResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14E09942AA8A15A001F8DA4 /* ChannelResponse.swift */; };
+		F1D1DCF52AA9D68200E2C501 /* ChannelInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1D1DCF42AA9D68200E2C501 /* ChannelInformation.swift */; };
 		F1F5C16C2AA9BB9900448C0D /* VideoInforation.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */; };
 		F1FA0FA32AA73CF300B5BC5A /* YoutubePlayer.html in Resources */ = {isa = PBXBuildFile; fileRef = F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */; };
 		F1FA0FA42AA73CF300B5BC5A /* YoutubeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */; };
@@ -79,6 +80,7 @@
 		F13DF5B42AA88A96002F638B /* CommentThreadResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentThreadResponse.swift; sourceTree = "<group>"; };
 		F13DF5B62AA88DE3002F638B /* CommentsListResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommentsListResponse.swift; sourceTree = "<group>"; };
 		F14E09942AA8A15A001F8DA4 /* ChannelResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelResponse.swift; sourceTree = "<group>"; };
+		F1D1DCF42AA9D68200E2C501 /* ChannelInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelInformation.swift; sourceTree = "<group>"; };
 		F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoInforation.swift; sourceTree = "<group>"; };
 		F1FA0FA12AA73CF300B5BC5A /* YoutubePlayer.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = YoutubePlayer.html; sourceTree = "<group>"; };
 		F1FA0FA22AA73CF300B5BC5A /* YoutubeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YoutubeView.swift; sourceTree = "<group>"; };
@@ -212,6 +214,7 @@
 			isa = PBXGroup;
 			children = (
 				F1F5C16B2AA9BB9900448C0D /* VideoInforation.swift */,
+				F1D1DCF42AA9D68200E2C501 /* ChannelInformation.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -333,6 +336,7 @@
 				3FF271D42AA597E7000A26F5 /* AppDelegate.swift in Sources */,
 				F1FA0FA42AA73CF300B5BC5A /* YoutubeView.swift in Sources */,
 				F13DF5B02AA866E2002F638B /* VideoInformationSearchResponse.swift in Sources */,
+				F1D1DCF52AA9D68200E2C501 /* ChannelInformation.swift in Sources */,
 				F13DF5B52AA88A97002F638B /* CommentThreadResponse.swift in Sources */,
 				F13DF5B72AA88DE3002F638B /* CommentsListResponse.swift in Sources */,
 				F13DF5A52AA806CF002F638B /* And.swift in Sources */,

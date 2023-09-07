@@ -7,6 +7,7 @@
 
 import UIKit
 
+@MainActor
 final class DetailPageViewController: UIViewController {
     
     private lazy var scrollView = UIScrollView()
@@ -136,16 +137,14 @@ extension DetailPageViewController {
         super.viewDidLoad()
 
         configure()
-
-        // 테스트 코드 추후에 삭제 요망
-        loadDatas()
+        
     }
 }
 
 extension DetailPageViewController {
     
     private func configure() {
-        view.backgroundColor = .white
+        view.backgroundColor = .black
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
 
@@ -176,6 +175,10 @@ extension DetailPageViewController {
         
         layout()
         prepareView(videoId: videoId)
+        
+        Task {
+            await loadDatas()
+        }
     }
     
     private func layout() {
@@ -221,21 +224,17 @@ extension DetailPageViewController {
         youtubeView.loadYoutube(videoId: videoId)
     }
     
-    private func loadDatas() {
-        APIManager.shared.request(YoutubeAPI.videoInformation(videoId)) { [weak self] result in
-            switch result {
-            case let .success(data):
-                do {
-                    let videoInformation = try data.toObject(VideoInformationSearchResponse.self).toVideoInformation()
-                    self?.videoTitleLabel.text = videoInformation.title
-                    self?.videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+"#"+$1 }))"
-                    self?.videoMakerNameLabel.text = videoInformation.channelName
-                } catch {
-                    print(error)
-                }
-            case let .failure(error):
-                print(error)
-            }
+    private func loadDatas() async {
+        do {
+            let videoInformation = try await APIManager.shared.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation()
+            videoTitleLabel.text = videoInformation.title
+            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+"#"+$1 }))"
+            videoMakerNameLabel.text = videoInformation.channelName
+            let channelId = videoInformation.channelId
+            let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
+            videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+        } catch {
+            print(error)
         }
     }
  
