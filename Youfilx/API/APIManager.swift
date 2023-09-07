@@ -12,41 +12,6 @@ class APIManager {
     static let shared = APIManager()
     private init() {}
     
-    func fetchVideos(pageToken: String, completion: @escaping (Result<Any, AFError>) -> Void) {
-        let url = API.baseUrl + "videos"
-        let apiParam = [
-            "part": "snippet",
-            "chart": "mostPopular",
-            "regionCode": "KR",
-            "key": API.key,
-            "pageToken": "\(pageToken)"
-        ] as [String: Any]
-        
-        AF.request(url, method: .get, parameters: apiParam)
-            .validate()
-            .responseJSON { response in
-                completion(response.result)
-                debugPrint(response)
-            }
-    }
-    
-    func searchFetchVideos(pageToken: String, completion: @escaping (Result<Any, AFError>) -> Void) {
-        let url = API.baseUrl + "search"
-        let apiParam = [
-            "part": "snippet",
-            "key": API.key,
-            "q": SearchViewController.searchText,
-            "pageToken": "\(pageToken)"
-        ] as [String: Any]
-        
-        AF.request(url, method: .get, parameters: apiParam)
-            .validate()
-            .responseJSON { response in
-                completion(response.result)
-                debugPrint(response)
-            }
-    }
-    
     func request(_ type: TargetType, completion: @escaping ((Result<Data, AFError>) -> Void)) {
         AF.request(type)
             .response { response in

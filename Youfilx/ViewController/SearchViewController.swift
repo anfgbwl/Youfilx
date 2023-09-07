@@ -2,7 +2,7 @@
 //  SearchViewController.swift
 //  Youfilx
 //
-//  Created by t2023-m0076 on 2023/09/06.
+//  Created by 삼인조 on 2023/09/06.
 //
 
 import UIKit
@@ -52,31 +52,43 @@ class SearchViewController: UIViewController {
     private func loadVideo(pageToken: String? = nil) {
         guard !isLoadingData else { return }
         isLoadingData = true
-        APIManager.shared.searchFetchVideos(pageToken: nextPageToken ?? "") { [weak self] result in
-            switch result {
+        
+        // YouTube API search 요청 생성
+        let request = YoutubeAPI.searchVideos(pageToken)
+
+        AF.request(request).responseJSON { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
             case .success(let data):
-                if let json = data as? [String:Any],
-                   let items = json["items"] as? [[String:Any]] {
+                print("searchVideos request: success")
+                if let json = data as? [String: Any],
+                   let items = json["items"] as? [[String: Any]] {
                     for item in items {
-                        if let videoId = item["id"] as? [String:Any],
-                           let id = videoId["videoId"] as? String,
-                           !SearchViewController.videoIds.contains(id),
-                           let snippet = item["snippet"] as? [String:Any],
+                        if let id = item["id"] as? [String: Any],
+                           let videoId = id["videoId"] as? String,
+                           !SearchViewController.videoIds.contains(videoId),
+                           let snippet = item["snippet"] as? [String: Any],
+                           let publishedAt = snippet["publishedAt"] as? String,
                            let title = snippet["title"] as? String,
-                           let thumbnails = snippet["thumbnails"] as? [String:Any],
-                           let medium = thumbnails["medium"] as? [String:Any],
+                           let thumbnails = snippet["thumbnails"] as? [String: Any],
+                           let medium = thumbnails["medium"] as? [String: Any],
                            let thumbnailUrl = medium["url"] as? String,
-                           let user = snippet["channelTitle"] as? String {
+                           let channelTitle = snippet["channelTitle"] as? String {
                             AF.request(thumbnailUrl).responseData { response in
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
-                                        SearchViewController.videoIds.append(id)
-                                        self?.thumbnails.append(image)
-                                        self?.titles.append(title)
-                                        self?.channelTitles.append(user)
+                                        SearchViewController.videoIds.append(videoId)
+                                        self.thumbnails.append(image)
+                                        self.titles.append(title)
+                                        self.channelTitles.append(channelTitle)
+                                        self.publishedAts.append(publishedAt)
+                                        
+                                        // viewCount load 오류로 임시 설정
+                                        self.viewCounts.append("1")
+//                                        self.fetchVideoViewCounts(videoId)
                                         DispatchQueue.main.async {
-                                            self?.collectionView.reloadData()
+                                            self.collectionView.reloadData()
                                         }
                                     } else {
                                         print("Failed to convert data to UIImage")
@@ -87,13 +99,33 @@ class SearchViewController: UIViewController {
                             }
                         }
                     }
-                    self?.nextPageToken = json["nextPageToken"] as? String
-                    self?.loadVideo(pageToken: self?.nextPageToken)
+                    self.nextPageToken = json["nextPageToken"] as? String
                 }
             case .failure(let error):
                 print(error)
             }
-            self?.isLoadingData = false
+            self.isLoadingData = false
+            print("titles: \(titles)")
+        }
+    }
+    
+    private func fetchVideoViewCounts(_ videoId: String) {
+        let request = YoutubeAPI.videoInformation(videoId)
+        
+        AF.request(request).responseJSON { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let data):
+                print("searchVideoLoad request: success")
+                if let videoInfo = data as? [String: Any],
+                   let statistics = videoInfo["statistics"] as? [String: Any],
+                   let viewCount = statistics["viewCount"] as? String {
+                    self.viewCounts.append(viewCount)
+                }
+            case .failure(let error):
+                print("조회수 정보 로드 오류: \(error)")
+            }
+            
         }
     }
     

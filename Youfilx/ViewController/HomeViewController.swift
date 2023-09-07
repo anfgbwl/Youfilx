@@ -50,7 +50,7 @@ class HomeViewController: UIViewController {
         isLoadingData = true
 
         // YouTube API mostPopular 요청 생성
-        let request = YoutubeAPI.mostPopularVideos(pageToken: pageToken)
+        let request = YoutubeAPI.mostPopularVideos(pageToken)
 
         AF.request(request).responseJSON { [weak self] response in
             guard let self = self else { return }

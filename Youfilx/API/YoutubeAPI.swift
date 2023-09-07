@@ -13,7 +13,8 @@ enum YoutubeAPI: TargetType {
     case videoInformation(_ videoId: String)
     case commentThread(_ videoId: String, _ nextPageToken: String? = nil)
     case commentsList(_ commentId: String, _ nextPageToken: String? = nil)
-    case mostPopularVideos(pageToken: String?)
+    case mostPopularVideos(_ pageToken: String?)
+    case searchVideos(_ pageToken: String?)
     
     var baseURL: String {
         return API.baseUrl
@@ -29,19 +30,21 @@ enum YoutubeAPI: TargetType {
             return "comments"
         case .mostPopularVideos:
             return "videos"
+        case .searchVideos:
+            return "search"
         }
     }
     
     var httpMethod: Alamofire.HTTPMethod {
         switch self {
-        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos:
+        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos, .searchVideos:
             return .get
         }
     }
     
     var headers: Alamofire.HTTPHeaders? {
         switch self {
-        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos:
+        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos, .searchVideos:
             return [
                 "Content-Type": "application/json"
             ]
@@ -81,12 +84,19 @@ enum YoutubeAPI: TargetType {
                 "key": API.key,
                 "pageToken": pageToken ?? ""
             ]
+        case let .searchVideos(pageToken):
+            return [
+                "part": "snippet",
+                "key": API.key,
+                "q": SearchViewController.searchText,
+                "pageToken": pageToken ?? ""
+            ]
         }
     }
     
     var body: Encodable? {
         switch self {
-        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos:
+        case .videoInformation, .commentThread, .commentsList, .mostPopularVideos, .searchVideos:
             return nil
         }
     }

@@ -30,8 +30,9 @@ extension TargetType {
             guard var url = urlComponent.url else {
                 throw AFError.explicitlyCancelled
             }
-            if let urlString = url.absoluteString.removingPercentEncoding {
-                url = URL(string: urlString)!
+            if let urlString = url.absoluteString.removingPercentEncoding,
+               let escapedURLString = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) {
+                url = URL(string: escapedURLString)!
             }
             let urlRequest = try URLRequest(url: url, method: httpMethod, headers: headers)
             return urlRequest
