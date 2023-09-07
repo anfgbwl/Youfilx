@@ -24,4 +24,18 @@ class APIManager {
             }
         
     }
+    
+    func `request`(_ type: TargetType) async throws -> Data {
+        return try await withCheckedThrowingContinuation { continuation in
+            request(type) { result in
+                switch result {
+                case let .success(data):
+                    continuation.resume(returning: data)
+                case let .failure(error):
+                    continuation.resume(throwing: error)
+                }
+            }
+        }
+    }
+    
 }
