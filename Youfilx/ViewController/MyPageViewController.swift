@@ -155,10 +155,33 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         case 2:
             navigationController?.pushViewController(MyPageHistoryViewController(), animated: true)
         case 3:
-            break
-            // Logout Action
+            // 로그아웃 확인 팝업 표시
+            let alert = UIAlertController(title: "로그아웃", message: "로그아웃하시겠습니까?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .destructive, handler: { [weak self] _ in
+                // 사용자 로그아웃 처리
+                self?.performLogout()
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
         default:
             break
         }
     }
+
+    // 사용자 로그아웃 처리
+    func performLogout() {
+        // 로그아웃 상태로 업데이트
+        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+        
+        // 기존 사용자 정보 초기화
+        var user = loadUserFromUserDefaults()
+        user?.isLoggedIn = false
+        saveUserToUserDefaults(user: user!)
+        
+        // 로그인 화면으로 이동
+        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            sceneDelegate.showLoginViewController()
+        }
+    }
+    
 }

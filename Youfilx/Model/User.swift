@@ -7,6 +7,7 @@ struct User: Codable {
     var image: Data?
     var watchHistory: [Video]?
     var favoriteVideos: [Video]?
+    var isLoggedIn: Bool
     
     // 랜덤 닉네임 생성 메서드
     static func generateRandomNickname(length: Int) -> String {
@@ -23,6 +24,7 @@ struct User: Codable {
         self.image = image
         self.watchHistory = watchHistory
         self.favoriteVideos = favoriteVideos
+        self.isLoggedIn = false
     }
 }
 

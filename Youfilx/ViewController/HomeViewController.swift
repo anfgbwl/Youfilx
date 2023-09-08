@@ -35,7 +35,8 @@ class HomeViewController: UIViewController {
     // MARK: - Lifecyle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        print("유저 : \(user.isLoggedIn)")
+        print(UserDefaults.standard.bool(forKey: "isLoggedIn"))
         setupUI()
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
