@@ -76,11 +76,11 @@ final class DetailPageViewController: UIViewController {
         selectedImage: .thumbUpFill,
         checked: { [weak self] checked in
             self?.likeAction(checked)
-    }).and {
-        $0.setTitle("1.6천", for: .normal)
-        $0.setTitleColor(UIColor.white, for: .normal)
-        $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
-    }
+        }).and {
+            $0.setTitle("1.6천", for: .normal)
+            $0.setTitleColor(UIColor.white, for: .normal)
+            $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
+        }
     private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
         //TODO: 댓글 자세히 보기
     }.and {
@@ -134,13 +134,13 @@ final class DetailPageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
 }
 
 extension DetailPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configure()
         
     }
@@ -171,7 +171,7 @@ extension DetailPageViewController {
         view.backgroundColor = .black
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
-
+        
         [youtubeView, videoInformationStackView, videoMakerStackView, videoCommentStackView].forEach {
             stackView.addArrangedSubview($0)
         }
@@ -229,7 +229,7 @@ extension DetailPageViewController {
             stackView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
             stackView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-    
+            
             youtubeView.heightAnchor.constraint(equalToConstant: 300),
             
             videoMoreInformationLabel.widthAnchor.constraint(equalToConstant: 50),
@@ -247,6 +247,7 @@ extension DetailPageViewController {
     private func prepareView(videoId: String) {
         
         stateSetting(videoId: videoId)
+        addWatchHistory(videoId: videoId)
         
         youtubeView.loadYoutube(videoId: videoId)
         guard let user = loadUserFromUserDefaults() else {
@@ -260,7 +261,7 @@ extension DetailPageViewController {
                 videoLikeButton.checkImageAdjust(false)
             }
         }
-
+        
         guard let watchHistory = user.watchHistory else {
             return
         }
@@ -292,6 +293,30 @@ extension DetailPageViewController {
                 user.watchHistory = watchHistory
                 saveUserToUserDefaults(user: user)
             }
+        }
+    }
+    
+    private func addWatchHistory(videoId: String) {
+        // 기존 사용자 정보 불러오기
+        guard var user = loadUserFromUserDefaults() else { return }
+        
+        // 현재 시청 중인 동영상 정보를 가져오기
+        let currentVideo = self.currentVideo
+        
+        // 기존 시청 기록 배열 가져오기
+        var watchHistory = user.watchHistory ?? []
+        
+        // 이미 시청한 동영상인지 확인
+        if !watchHistory.contains(where: { $0.id == videoId }) {
+            // 시청한 동영상 목록에 중복되지 않는 경우에만 추가
+            watchHistory.insert(currentVideo, at: 0) // 맨 앞에 추가
+            
+            // 업데이트된 시청 기록으로 사용자 정보 업데이트
+            user.watchHistory = watchHistory
+            saveUserToUserDefaults(user: user)
+            print("시청기록 추가: \(user.watchHistory)")
+        } else {
+            print("이미 시청한 동영상입니다.")
         }
     }
     
