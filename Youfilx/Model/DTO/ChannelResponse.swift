@@ -55,7 +55,10 @@ struct ChannelResponse: Decodable {
         }
     }
     
-    func toChannelInformation() -> ChannelInformation {
+    func toChannelInformation() -> ChannelInformation? {
+        if items.count == 0 {
+            return nil
+        }
         let item = items[0]
         let snippet = item.snippet
         let thumbnails = snippet.thumbnails
@@ -63,7 +66,7 @@ struct ChannelResponse: Decodable {
             channelId: item.id,
             title: snippet.title,
             publishedAt: snippet.publishedAt,
-            thumbnailURL: thumbnails.high.url,
+            thumbnailURL: thumbnails.default.url,
             viewCount: item.statistics.viewCount,
             subscriberCount: item.statistics.subscriberCount,
             videoCount: item.statistics.videoCount
