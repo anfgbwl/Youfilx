@@ -76,13 +76,14 @@ final class DetailPageViewController: UIViewController {
         selectedImage: .thumbUpFill,
         checked: { [weak self] checked in
             self?.likeAction(checked)
-        }).and {
-            $0.setTitle("1.6천", for: .normal)
-            $0.setTitleColor(UIColor.white, for: .normal)
-            $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
-        }
-    private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
-        //TODO: 댓글 자세히 보기
+    }).and {
+        $0.setTitle("1.6천", for: .normal)
+        $0.setTitleColor(UIColor.white, for: .normal)
+        $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
+    }
+    private lazy var videoMorCommentView = CommentView()
+    private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView { [weak self] in
+
     }.and {
         $0.axis = .vertical
         $0.distribution = .fill
@@ -134,13 +135,13 @@ final class DetailPageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
 }
 
 extension DetailPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         configure()
         
     }
@@ -202,6 +203,11 @@ extension DetailPageViewController {
         
         Task {
             await loadDatas()
+        }
+        
+        videoCommentStackView.touched = { [weak self] in
+            guard let self else {return}
+            self.present(CommentView(videoId: self.videoId), animated: true)
         }
     }
     
@@ -322,7 +328,9 @@ extension DetailPageViewController {
     
     private func loadDatas() async {
         do {
-            let videoInformation = try await APIManager.shared.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation()
+            guard let videoInformation = try await apiManager.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation() else {
+                return
+            }
             videoTitleLabel.text = videoInformation.title
             videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
             videoMakerNameLabel.text = videoInformation.channelName
@@ -335,12 +343,17 @@ extension DetailPageViewController {
             currentVideo.duration = videoInformation.duration
             currentVideo.uploadDate = videoInformation.createdAt
             let channelId = videoInformation.channelId
-            let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
-            videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
-            videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
-            let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformation()
-            videoCommentLabel.text = commentInformation?.textDisplay
-            videoCommenterImageView.fetchImage(commentInformation?.authorProfileImageUrl ?? "")
+            
+            if let channelInformation = try await apiManager.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation() {
+                videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+                videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
+            }
+
+            if let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformations()?[0] {
+                videoCommentLabel.text = commentInformation.textDisplay
+                videoCommenterImageView.fetchImage(commentInformation.authorProfileImageUrl)
+            }
+
         } catch {
             print(error)
         }
