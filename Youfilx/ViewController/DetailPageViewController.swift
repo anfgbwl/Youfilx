@@ -172,7 +172,7 @@ extension DetailPageViewController {
         view.backgroundColor = .black
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
-
+        
         [youtubeView, videoInformationStackView, videoMakerStackView, videoCommentStackView].forEach {
             stackView.addArrangedSubview($0)
         }
@@ -224,8 +224,6 @@ extension DetailPageViewController {
         videoCommenterImageView.translatesAutoresizingMaskIntoConstraints = false
         videoCommentSeeMore.translatesAutoresizingMaskIntoConstraints = false
         
-//        videoMorCommentView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
@@ -237,7 +235,7 @@ extension DetailPageViewController {
             stackView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
             stackView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-    
+            
             youtubeView.heightAnchor.constraint(equalToConstant: 300),
             
             videoMoreInformationLabel.widthAnchor.constraint(equalToConstant: 50),
@@ -249,14 +247,13 @@ extension DetailPageViewController {
             videoCommenterImageView.widthAnchor.constraint(equalToConstant: 22),
             videoCommentSeeMore.trailingAnchor.constraint(equalTo: videoCommentStackView.trailingAnchor, constant: -10),
             videoCommentSeeMore.widthAnchor.constraint(equalToConstant: 15)
-            
-//            videoMorCommentView.heightAnchor.constraint(equalToConstant: 400)
         ])
     }
     
     private func prepareView(videoId: String) {
         
         stateSetting(videoId: videoId)
+        addWatchHistory(videoId: videoId)
         
         youtubeView.loadYoutube(videoId: videoId)
         guard let user = loadUserFromUserDefaults() else {
@@ -270,7 +267,7 @@ extension DetailPageViewController {
                 videoLikeButton.checkImageAdjust(false)
             }
         }
-
+        
         guard let watchHistory = user.watchHistory else {
             return
         }
@@ -302,6 +299,30 @@ extension DetailPageViewController {
                 user.watchHistory = watchHistory
                 saveUserToUserDefaults(user: user)
             }
+        }
+    }
+    
+    private func addWatchHistory(videoId: String) {
+        // 기존 사용자 정보 불러오기
+        guard var user = loadUserFromUserDefaults() else { return }
+        
+        // 현재 시청 중인 동영상 정보를 가져오기
+        let currentVideo = self.currentVideo
+        
+        // 기존 시청 기록 배열 가져오기
+        var watchHistory = user.watchHistory ?? []
+        
+        // 이미 시청한 동영상인지 확인
+        if !watchHistory.contains(where: { $0.id == videoId }) {
+            // 시청한 동영상 목록에 중복되지 않는 경우에만 추가
+            watchHistory.insert(currentVideo, at: 0) // 맨 앞에 추가
+            
+            // 업데이트된 시청 기록으로 사용자 정보 업데이트
+            user.watchHistory = watchHistory
+            saveUserToUserDefaults(user: user)
+            print("시청기록 추가: \(user.watchHistory)")
+        } else {
+            print("이미 시청한 동영상입니다.")
         }
     }
     
@@ -341,9 +362,9 @@ extension DetailPageViewController {
         guard var user = loadUserFromUserDefaults() else {
             return
         }
-        guard var favoriteList = user.favoriteVideos else {
-            return
-        }
+        
+        var favoriteList = user.favoriteVideos ?? []
+        
         if isChecked {
             if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
                 favoriteList.remove(at: videoIndex)
@@ -362,6 +383,6 @@ extension DetailPageViewController {
 }
 
 extension UIImage {
-    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")?.withTintColor(.white)
-    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")?.withTintColor(.white)
+    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")
+    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")
 }
