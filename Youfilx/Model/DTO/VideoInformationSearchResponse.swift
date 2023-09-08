@@ -78,10 +78,7 @@ struct VideoInformationSearchResponse: Decodable {
 
     }
     
-    func toVideoInformation() -> VideoInformation? {
-        if items.count == 0 {
-            return nil
-        }
+    func toVideoInformation() -> VideoInformation {
         let item = items[0]
         let snippet = item.snippet
         let statics = item.statistics
@@ -94,7 +91,7 @@ struct VideoInformationSearchResponse: Decodable {
             likeCount: Int(statics.likeCount) ?? 0,
             channelId: snippet.channelId,
             channelName: snippet.channelTitle,
-            thumbnailURL: snippet.thumbnails.default.url,
+            thumbnailURL: snippet.thumbnails.maxres.url,
             duration: item.contentDetails.duration
         )
     }

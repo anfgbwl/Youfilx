@@ -9,7 +9,7 @@ import UIKit
 
 class BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView: UIStackView {
     
-    var touched: (() -> Void)?
+    private var touched: (() -> Void)?
 
     init(_ touched: (() -> Void)? = nil) {
         self.touched = touched

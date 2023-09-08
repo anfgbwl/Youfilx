@@ -76,14 +76,13 @@ final class DetailPageViewController: UIViewController {
         selectedImage: .thumbUpFill,
         checked: { [weak self] checked in
             self?.likeAction(checked)
-    }).and {
-        $0.setTitle("1.6천", for: .normal)
-        $0.setTitleColor(UIColor.white, for: .normal)
-        $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
-    }
-    private lazy var videoMorCommentView = CommentView()
-    private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView { [weak self] in
-
+        }).and {
+            $0.setTitle("1.6천", for: .normal)
+            $0.setTitleColor(UIColor.white, for: .normal)
+            $0.setTitleColor(UIColor.white.withAlphaComponent(0.5), for: .highlighted)
+        }
+    private lazy var videoCommentStackView = BackgroundColorAlphaChangeLikeUIButtonWhenTappedUIStackView {
+        //TODO: 댓글 자세히 보기
     }.and {
         $0.axis = .vertical
         $0.distribution = .fill
@@ -135,13 +134,13 @@ final class DetailPageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-
+    
 }
 
 extension DetailPageViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         configure()
         
     }
@@ -172,7 +171,7 @@ extension DetailPageViewController {
         view.backgroundColor = .black
         view.addSubview(scrollView)
         scrollView.addSubview(stackView)
-
+        
         [youtubeView, videoInformationStackView, videoMakerStackView, videoCommentStackView].forEach {
             stackView.addArrangedSubview($0)
         }
@@ -204,11 +203,6 @@ extension DetailPageViewController {
         Task {
             await loadDatas()
         }
-        
-        videoCommentStackView.touched = { [weak self] in
-            guard let self else {return}
-            self.present(CommentView(videoId: self.videoId), animated: true)
-        }
     }
     
     private func layout() {
@@ -224,8 +218,6 @@ extension DetailPageViewController {
         videoCommenterImageView.translatesAutoresizingMaskIntoConstraints = false
         videoCommentSeeMore.translatesAutoresizingMaskIntoConstraints = false
         
-//        videoMorCommentView.translatesAutoresizingMaskIntoConstraints = false
-        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             scrollView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
@@ -237,7 +229,7 @@ extension DetailPageViewController {
             stackView.leftAnchor.constraint(equalTo: scrollView.leftAnchor),
             stackView.rightAnchor.constraint(equalTo: scrollView.rightAnchor),
             stackView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-    
+            
             youtubeView.heightAnchor.constraint(equalToConstant: 300),
             
             videoMoreInformationLabel.widthAnchor.constraint(equalToConstant: 50),
@@ -249,14 +241,13 @@ extension DetailPageViewController {
             videoCommenterImageView.widthAnchor.constraint(equalToConstant: 22),
             videoCommentSeeMore.trailingAnchor.constraint(equalTo: videoCommentStackView.trailingAnchor, constant: -10),
             videoCommentSeeMore.widthAnchor.constraint(equalToConstant: 15)
-            
-//            videoMorCommentView.heightAnchor.constraint(equalToConstant: 400)
         ])
     }
     
     private func prepareView(videoId: String) {
         
         stateSetting(videoId: videoId)
+        addWatchHistory(videoId: videoId)
         
         youtubeView.loadYoutube(videoId: videoId)
         guard let user = loadUserFromUserDefaults() else {
@@ -270,7 +261,7 @@ extension DetailPageViewController {
                 videoLikeButton.checkImageAdjust(false)
             }
         }
-
+        
         guard let watchHistory = user.watchHistory else {
             return
         }
@@ -305,11 +296,33 @@ extension DetailPageViewController {
         }
     }
     
+    private func addWatchHistory(videoId: String) {
+        // 기존 사용자 정보 불러오기
+        guard var user = loadUserFromUserDefaults() else { return }
+        
+        // 현재 시청 중인 동영상 정보를 가져오기
+        let currentVideo = self.currentVideo
+        
+        // 기존 시청 기록 배열 가져오기
+        var watchHistory = user.watchHistory ?? []
+        
+        // 이미 시청한 동영상인지 확인
+        if !watchHistory.contains(where: { $0.id == videoId }) {
+            // 시청한 동영상 목록에 중복되지 않는 경우에만 추가
+            watchHistory.insert(currentVideo, at: 0) // 맨 앞에 추가
+            
+            // 업데이트된 시청 기록으로 사용자 정보 업데이트
+            user.watchHistory = watchHistory
+            saveUserToUserDefaults(user: user)
+            print("시청기록 추가: \(user.watchHistory)")
+        } else {
+            print("이미 시청한 동영상입니다.")
+        }
+    }
+    
     private func loadDatas() async {
         do {
-            guard let videoInformation = try await apiManager.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation() else {
-                return
-            }
+            let videoInformation = try await APIManager.shared.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation()
             videoTitleLabel.text = videoInformation.title
             videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
             videoMakerNameLabel.text = videoInformation.channelName
@@ -321,17 +334,12 @@ extension DetailPageViewController {
             currentVideo.views = videoInformation.viewCount
             currentVideo.duration = videoInformation.duration
             let channelId = videoInformation.channelId
-            
-            if let channelInformation = try await apiManager.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation() {
-                videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
-                videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
-            }
-
-            if let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformations()?[0] {
-                videoCommentLabel.text = commentInformation.textDisplay
-                videoCommenterImageView.fetchImage(commentInformation.authorProfileImageUrl)
-            }
-
+            let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
+            videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+            videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
+            let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformation()
+            videoCommentLabel.text = commentInformation?.textDisplay
+            videoCommenterImageView.fetchImage(commentInformation?.authorProfileImageUrl ?? "")
         } catch {
             print(error)
         }
@@ -341,9 +349,9 @@ extension DetailPageViewController {
         guard var user = loadUserFromUserDefaults() else {
             return
         }
-        guard var favoriteList = user.favoriteVideos else {
-            return
-        }
+        
+        var favoriteList = user.favoriteVideos ?? []
+        
         if isChecked {
             if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
                 favoriteList.remove(at: videoIndex)
@@ -362,6 +370,6 @@ extension DetailPageViewController {
 }
 
 extension UIImage {
-    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")?.withTintColor(.white)
-    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")?.withTintColor(.white)
+    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")
+    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")
 }

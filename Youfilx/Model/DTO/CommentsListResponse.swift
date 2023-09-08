@@ -46,26 +46,6 @@ struct CommentListResponse: Decodable {
         }
         
     }
-    
-    func toCommentThreadInformations() -> [CommentThreadInformation]? {
-        if items.count == 0 {
-            return nil
-        }
-        return items.map { item in
-            let snippet = item.snippet
-            return CommentThreadInformation(
-                id: item.id,
-                channelId: snippet.channelId,
-                videoId: snippet.channelId,
-                textDisplay: snippet.textDisplay,
-                authorDisplayName: snippet.authorDisplayName,
-                authorProfileImageUrl: snippet.authorProfileImageUrl,
-                authorChannelId: snippet.authorChannelId.value,
-                likeCount: snippet.likeCount,
-                totalReplyCount: 0
-            )
-        }
-    }
 
 }
 
