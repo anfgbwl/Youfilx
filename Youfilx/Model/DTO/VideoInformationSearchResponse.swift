@@ -94,7 +94,7 @@ struct VideoInformationSearchResponse: Decodable {
             likeCount: Int(statics.likeCount) ?? 0,
             channelId: snippet.channelId,
             channelName: snippet.channelTitle,
-            thumbnailURL: snippet.thumbnails.default.url,
+            thumbnailURL: snippet.thumbnails.maxres.url,
             duration: item.contentDetails.duration
         )
     }
