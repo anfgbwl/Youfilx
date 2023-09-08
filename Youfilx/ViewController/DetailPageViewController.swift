@@ -349,9 +349,9 @@ extension DetailPageViewController {
         guard var user = loadUserFromUserDefaults() else {
             return
         }
-        guard var favoriteList = user.favoriteVideos else {
-            return
-        }
+        
+        var favoriteList = user.favoriteVideos ?? []
+        
         if isChecked {
             if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
                 favoriteList.remove(at: videoIndex)
