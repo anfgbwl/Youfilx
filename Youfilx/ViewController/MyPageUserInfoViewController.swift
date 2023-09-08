@@ -20,7 +20,6 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         let button = UIButton()
         button.setTitle("프로필 사진 변경", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.addTarget(self, action: #selector(changeProfilePicture), for: .touchUpInside)
         return button
     }()
     
@@ -114,7 +113,6 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         button.setTitleColor(.white, for: .normal)
         button.backgroundColor = .darkGray
         button.layer.cornerRadius = 8
-        button.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         return button
     }()
     
@@ -125,7 +123,8 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
     // MARK: - LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        changeProfileButton.addTarget(self, action: #selector(changeProfilePicture), for: .touchUpInside)
+        saveButton.addTarget(self, action: #selector(saveButtonTapped), for: .touchUpInside)
         setupUI()
     }
     
@@ -155,6 +154,10 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
 
     // MARK: - UI
     func setupUI() {
+        // Navigation Bar
+        navigationController?.navigationBar.tintColor = .label
+        navigationController?.navigationBar.topItem?.title = ""
+        
         view.backgroundColor = .systemBackground
 
         
@@ -284,7 +287,7 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         
         // 비밀번호와 비밀번호 확인이 모두 비어있지 않으면 비밀번호를 업데이트
         if !newPassword.isEmpty || !confirmPassword.isEmpty {
-            // 비밀번호와 비밀번호 확인이 일치하는지 확인합니다.
+            // 비밀번호와 비밀번호 확인이 일치하는지 확인
             if newPassword != confirmPassword {
                 showAlert(title: "오류", message: "비밀번호와 비밀번호 확인이 일치하지 않습니다.")
                 return
