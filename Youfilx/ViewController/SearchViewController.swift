@@ -55,38 +55,66 @@ class SearchViewController: UIViewController {
         
         // YouTube API search 요청 생성
         let request = YoutubeAPI.searchVideos(pageToken)
-
+        
         AF.request(request).responseJSON { [weak self] response in
             guard let self = self else { return }
             switch response.result {
             case .success(let data):
+                print(data)
                 print("✅ searchVideos request: success")
                 if let json = data as? [String: Any],
                    let items = json["items"] as? [[String: Any]] {
                     for item in items {
                         if let id = item["id"] as? [String: Any],
                            let videoId = id["videoId"] as? String,
-                           !SearchViewController.videoIds.contains(videoId),
-                           let snippet = item["snippet"] as? [String: Any],
+                           !SearchViewController.videoIds.contains(videoId) {
+                            SearchViewController.videoIds.append(videoId)
+                            self.fetchVideoViewCounts(videoId)
+                        } else {
+                            print("🚫 Failed to convert data to UIImage")
+                        }
+                    }
+                    self.nextPageToken = json["nextPageToken"] as? String
+                }
+            case .failure(let error):
+                print("🚫 \(error)")
+            }
+            self.isLoadingData = false
+        }
+    }
+
+    private func fetchVideoViewCounts(_ videoId: String) {
+        let request = YoutubeAPI.videoInformation(videoId)
+        print(request)
+        
+        AF.request(request).responseJSON { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let data):
+                print(data)
+                print("✅ searchVideoLoad request: success")
+                if let videoInfo = data as? [String: Any],
+                   let items = videoInfo["items"] as? [[String: Any]] {
+                    for item in items {
+                        if let snippet = item["snippet"] as? [String: Any],
                            let publishedAt = snippet["publishedAt"] as? String,
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String: Any],
-                           let medium = thumbnails["medium"] as? [String: Any],
-                           let thumbnailUrl = medium["url"] as? String,
-                           let channelTitle = snippet["channelTitle"] as? String {
-                            AF.request(thumbnailUrl).responseData { response in
+                           let maxres = thumbnails["maxres"] as? [String: Any],
+                           let url = maxres["url"] as? String,
+                           let channelTitle = snippet["channelTitle"] as? String,
+                           let statistics = item["statistics"] as? [String: Any],
+                           let viewCount = statistics["viewCount"] as? String {
+                            AF.request(url).responseData { response in
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
-                                        SearchViewController.videoIds.append(videoId)
-                                        self.thumbnails.append(image)
-                                        self.titles.append(title)
-                                        self.channelTitles.append(channelTitle)
                                         self.publishedAts.append(publishedAt)
-                                        
-                                        // viewCount load 오류로 임시 설정
-                                        self.viewCounts.append("1")
-//                                        self.fetchVideoViewCounts(videoId)
+                                        self.titles.append(title)
+                                        self.thumbnails.append(image)
+                                        self.viewCounts.append(viewCount)
+                                        self.channelTitles.append(channelTitle)
+                                        self.viewCounts.append(viewCount)
                                         DispatchQueue.main.async {
                                             self.collectionView.reloadData()
                                         }
@@ -99,32 +127,10 @@ class SearchViewController: UIViewController {
                             }
                         }
                     }
-                    self.nextPageToken = json["nextPageToken"] as? String
-                }
-            case .failure(let error):
-                print("🚫 \(error)")
-            }
-            self.isLoadingData = false
-        }
-    }
-    
-    private func fetchVideoViewCounts(_ videoId: String) {
-        let request = YoutubeAPI.videoInformation(videoId)
-        
-        AF.request(request).responseJSON { [weak self] response in
-            guard let self = self else { return }
-            switch response.result {
-            case .success(let data):
-                print("✅ searchVideoLoad request: success")
-                if let videoInfo = data as? [String: Any],
-                   let statistics = videoInfo["statistics"] as? [String: Any],
-                   let viewCount = statistics["viewCount"] as? String {
-                    self.viewCounts.append(viewCount)
                 }
             case .failure(let error):
                 print("🚫 searchVideoLoad request: \(error)")
             }
-            
         }
     }
     
