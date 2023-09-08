@@ -324,9 +324,12 @@ extension DetailPageViewController {
         guard var user = loadUserFromUserDefaults() else {
             return
         }
-        guard var favoriteList = user.favoriteVideos else {
-            return
-        }
+//        guard var favoriteList = user.favoriteVideos else {
+//            return
+//        }
+        // favoriteList가 없으면 생성
+        var favoriteList = user.favoriteVideos ?? []
+        
         if isChecked {
             if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
                 favoriteList.remove(at: videoIndex)
@@ -339,6 +342,7 @@ extension DetailPageViewController {
             favoriteList.remove(at: videoIndex)
         }
         user.favoriteVideos = favoriteList
+        print(user.favoriteVideos)
         saveUserToUserDefaults(user: user)
     }
     
