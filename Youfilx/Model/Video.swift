@@ -14,7 +14,7 @@ struct Video: Codable {
     var creatorNickname: String = ""
     var views: Int = 0
     var duration: String = ""
-    var uploadDate: Date = .init()
+    var uploadDate: String = ""
     var comments: [Comment] = []
     var currentTime: Int?
 }

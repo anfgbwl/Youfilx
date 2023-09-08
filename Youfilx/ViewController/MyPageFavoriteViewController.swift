@@ -85,7 +85,7 @@ extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionVi
                         let title = video.title
                         let name = video.creatorNickname
                         let count = "\(video.views)"
-                        let date = ISO8601DateFormatter().string(from: video.uploadDate)
+                        let date = video.uploadDate
                         cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
                     }
                 } else {
