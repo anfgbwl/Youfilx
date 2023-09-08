@@ -148,6 +148,14 @@ public class YoutubeView: UIView {
         }
     }
     
+    public func unMute() {
+        evaluateJavaScript(command: "unMute")
+    }
+    
+    public func mute() {
+        evaluateJavaScript(command: "mute")
+    }
+    
     private func evaluateJavaScript(command: String, completion: ((Any?) -> Void)? = nil) {
         let fullCommand = "player.\(command);"
         webView.evaluateJavaScript(fullCommand) { (result, error) in

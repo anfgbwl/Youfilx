@@ -9,8 +9,8 @@ import Foundation
 
 struct ChannelResponse: Decodable {
     
-    let kind: String
-    let etag: String
+    let kind: String?
+    let etag: String?
     let pageInfo: PageInfo
     let items: [ChannelItem]
     
@@ -20,8 +20,8 @@ struct ChannelResponse: Decodable {
     }
     
     struct ChannelItem: Decodable {
-        let kind: String
-        let etag: String
+        let kind: String?
+        let etag: String?
         let id: String
         let snippet: Snippet
         let statistics: Statistics
@@ -29,7 +29,7 @@ struct ChannelResponse: Decodable {
         struct Snippet: Decodable {
             let title: String
             let description: String
-            let customUrl: String
+//            let customUrl: String
             let publishedAt: String
             let thumbnails: Thumbnails
             

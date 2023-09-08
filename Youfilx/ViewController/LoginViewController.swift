@@ -133,6 +133,14 @@ class LoginViewController: UIViewController {
         loginButton.addTarget(self, action: #selector(loginButtonTapped), for: .touchUpInside)
         passwordCheckButton.addTarget(self, action: #selector(passwordCheck), for: .touchUpInside)
         
+        #if DEVELOP
+        saveUserToUserDefaults(user: .init(id: "test@test.com", password: "test1234", image: nil, watchHistory: [], favoriteVideos: []))
+        emailTextField.text = "test@test.com"
+        passwordTextField.text = "test1234"
+        loginButton.backgroundColor = #colorLiteral(red: 0.8580306172, green: 0.1295066774, blue: 0.1757571995, alpha: 1)
+        loginButton.isEnabled = true
+        #endif
+        
     }
     
     

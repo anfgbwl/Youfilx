@@ -54,8 +54,9 @@ final class DetailPageViewController: UIViewController {
         $0.spacing = 10
         $0.backgroundColor = .black
     }
-    private lazy var videoMakerImageView = UIImageView().and {
+    private lazy var videoMakerImageView = DImageView().and {
         $0.layer.cornerRadius = 15
+        $0.clipsToBounds = true
     }
     private lazy var videoMakerInformationStackView = UIStackView().and {
         $0.distribution = .fillProportionally
@@ -71,10 +72,10 @@ final class DetailPageViewController: UIViewController {
         $0.font = .systemFont(ofSize: 12, weight: .thin)
     }
     private lazy var videoLikeButton = ImageChangableWhenSelectedButton(
-        normalImage: .checkmark,
-        selectedImage: .add,
-        checked: { checked in
-        // 버튼 누르면 찜한 목록 추가 되도록
+        normalImage: .thumbUpNormal,
+        selectedImage: .thumbUpFill,
+        checked: { [weak self] checked in
+            self?.likeAction(checked)
     }).and {
         $0.setTitle("1.6천", for: .normal)
         $0.setTitleColor(UIColor.white, for: .normal)
@@ -109,8 +110,9 @@ final class DetailPageViewController: UIViewController {
         $0.distribution = .fill
         $0.spacing = 10
     }
-    private lazy var videoCommenterImageView = UIImageView().and {
+    private lazy var videoCommenterImageView = DImageView().and {
         $0.layer.cornerRadius = 11
+        $0.clipsToBounds = true
     }
     private lazy var videoCommentLabel = UILabel().and {
         $0.textColor = .white
@@ -120,9 +122,12 @@ final class DetailPageViewController: UIViewController {
         $0.setImage(UIImage(systemName: "chevron.down")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
     }
     private let videoId: String
+    private let apiManager = APIManager.shared
+    private var currentVideo = Video()
     
     init(videoId: String) {
         self.videoId = videoId
+        currentVideo.id = videoId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -138,6 +143,25 @@ extension DetailPageViewController {
 
         configure()
         
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        youtubeView.getCurrentTime { [weak self] currentTime in
+            guard let self else {return}
+            let currentTimeInt = Int(currentTime)
+            guard var user = loadUserFromUserDefaults() else {return}
+            guard var watchHistory = user.watchHistory else {return}
+            guard let videoIndex = watchHistory.firstIndex(where: { $0.id == self.videoId }) else {
+                return
+            }
+            var video = watchHistory[videoIndex]
+            video.currentTime = currentTimeInt
+            watchHistory[videoIndex] = video
+            user.watchHistory = watchHistory
+            saveUserToUserDefaults(user: user)
+        }
     }
 }
 
@@ -221,22 +245,106 @@ extension DetailPageViewController {
     }
     
     private func prepareView(videoId: String) {
+        
+        stateSetting(videoId: videoId)
+        
         youtubeView.loadYoutube(videoId: videoId)
+        guard let user = loadUserFromUserDefaults() else {
+            return
+        }
+        
+        if let favoriteList = user.favoriteVideos {
+            if favoriteList.map({ $0.id }).contains(videoId) {
+                videoLikeButton.checkImageAdjust(true)
+            } else {
+                videoLikeButton.checkImageAdjust(false)
+            }
+        }
+
+        guard let watchHistory = user.watchHistory else {
+            return
+        }
+        guard let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) else {
+            return
+        }
+        let video = watchHistory[videoIndex]
+        guard let videoStartTime = video.currentTime else {
+            return
+        }
+        youtubeView.loadYoutube(videoId: videoId, startTime: videoStartTime, isAutoPlay: true)
+        
+    }
+    
+    private func stateSetting(videoId: String) {
+        youtubeView.state = { [weak self] state in
+            guard let self else {return}
+            if state == .playing {
+                guard var user = loadUserFromUserDefaults() else {
+                    return
+                }
+                guard var watchHistory = user.watchHistory else {
+                    return
+                }
+                if let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) {
+                    watchHistory.remove(at: videoIndex)
+                }
+                watchHistory = [self.currentVideo] + watchHistory
+                user.watchHistory = watchHistory
+                saveUserToUserDefaults(user: user)
+            }
+        }
     }
     
     private func loadDatas() async {
         do {
             let videoInformation = try await APIManager.shared.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation()
             videoTitleLabel.text = videoInformation.title
-            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+"#"+$1 }))"
+            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
             videoMakerNameLabel.text = videoInformation.channelName
+            videoLikeButton.setTitle("\(videoInformation.likeCount)", for: .normal)
+            videoCommentCountLabel.text = "\(videoInformation.commentCount)"
+            currentVideo.thumbnailImage = videoInformation.thumbnailURL
+            currentVideo.title = videoInformation.title
+            currentVideo.creatorNickname = videoInformation.channelName
+            currentVideo.views = videoInformation.viewCount
+            currentVideo.duration = videoInformation.duration
             let channelId = videoInformation.channelId
             let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
             videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+            videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
+            let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformation()
+            videoCommentLabel.text = commentInformation?.textDisplay
+            videoCommenterImageView.fetchImage(commentInformation?.authorProfileImageUrl ?? "")
         } catch {
             print(error)
         }
     }
- 
+    
+    private func likeAction(_ isChecked: Bool) {
+        guard var user = loadUserFromUserDefaults() else {
+            return
+        }
+        guard var favoriteList = user.favoriteVideos else {
+            return
+        }
+        if isChecked {
+            if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
+                favoriteList.remove(at: videoIndex)
+            }
+            favoriteList = [currentVideo] + favoriteList
+        } else {
+            guard let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) else {
+                return
+            }
+            favoriteList.remove(at: videoIndex)
+        }
+        user.favoriteVideos = favoriteList
+        saveUserToUserDefaults(user: user)
+    }
+    
 }
 
+extension UIImage {
+    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")
+    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")
+}
