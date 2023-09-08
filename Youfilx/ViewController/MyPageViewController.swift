@@ -25,7 +25,7 @@ class MyPageViewController: UIViewController {
         let iv = UIImageView()
         iv.backgroundColor = .white
         iv.contentMode = .scaleAspectFill
-        iv.image = UIImage(named: "1")
+        iv.image = UIImage(named: "profile_placeholder.png")
         iv.tintColor = .red
         iv.clipsToBounds = true
         iv.layer.cornerRadius = 25
@@ -85,15 +85,27 @@ class MyPageViewController: UIViewController {
         tableView.dataSource = self
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // 수정된 정보를 가져와 화면에 표시
+        loadAccount()
+    }
+    
     // MARK: - Load Account
+    // 사용자 정보를 다시 불러와서 화면에 표시하는 메서드
     private func loadAccount() {
-        if let imageData = user.image {
-            if let profileImage = UIImage(data: imageData) {
-                self.profileImage.image = profileImage
-            }
+        // 사용자 정보를 UserDefaults에서 가져옴
+        let user = loadUserFromUserDefaults()
+
+        if let imageData = user?.image, let profileImage = UIImage(data: imageData) {
+            self.profileImage.image = profileImage
+        } else {
+            // 이미지가 nil이면 placeholder 이미지를 설정
+            self.profileImage.image = UIImage(named: "profile_placeholder.png")
         }
-        self.profileName.text = user.nickname
-        self.profileId.text = user.id
+        self.profileName.text = user?.nickname
+        self.profileId.text = user?.id
     }
     
     // MARK: - setupUI
@@ -121,8 +133,9 @@ class MyPageViewController: UIViewController {
             tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
         ])
-        
     }
+    
+    
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
@@ -143,7 +156,7 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return 50 // 높이 오류
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -155,10 +168,33 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         case 2:
             navigationController?.pushViewController(MyPageHistoryViewController(), animated: true)
         case 3:
-            break
-            // Logout Action
+            // 로그아웃 확인 팝업 표시
+            let alert = UIAlertController(title: "로그아웃", message: "로그아웃하시겠습니까?", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .destructive, handler: { [weak self] _ in
+                // 사용자 로그아웃 처리
+                self?.performLogout()
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
         default:
             break
         }
     }
+
+    // 사용자 로그아웃 처리
+    func performLogout() {
+        // 로그아웃 상태로 업데이트
+        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+        
+        // 기존 사용자 정보 초기화
+        var user = loadUserFromUserDefaults()
+        user?.isLoggedIn = false
+        saveUserToUserDefaults(user: user!)
+        
+        // 로그인 화면으로 이동
+        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            sceneDelegate.showLoginViewController()
+        }
+    }
+    
 }
