@@ -9,16 +9,13 @@ import UIKit
 import Alamofire
 
 class MyPageFavoriteViewController: UIViewController {
+    
+    // 사용자 정보
+    var user: User = loadUserFromUserDefaults()!
 
     // MARK: - Variables
-    private var isLoadingData = false
-    private var nextPageToken: String?
+    private var videos: [Video] = []
     static var videoIds: [String] = []
-    private var thumbnails: [UIImage] = []
-    private var titles: [String] = []
-    private var channelTitles: [String] = []
-    private var viewCounts: [String] = []
-    private var publishedAts: [String] = []
 
     // MARK: - UI Components
     private let collectionView: UICollectionView = {
@@ -40,94 +37,12 @@ class MyPageFavoriteViewController: UIViewController {
         self.collectionView.dataSource = self
     }
     
-    // MARK: - YouTube Video Load
-    private func loadVideo(pageToken: String? = nil) {
-        guard !isLoadingData else { return }
-        isLoadingData = true
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         
-        // YouTube API search 요청 생성
-        let request = YoutubeAPI.searchVideos(pageToken)
-        
-        AF.request(request).responseJSON { [weak self] response in
-            guard let self = self else { return }
-            switch response.result {
-            case .success(let data):
-                print(data)
-                print("✅ searchVideos request: success")
-                if let json = data as? [String: Any],
-                   let items = json["items"] as? [[String: Any]] {
-                    for item in items {
-                        if let id = item["id"] as? [String: Any],
-                           let videoId = id["videoId"] as? String,
-                           !SearchViewController.videoIds.contains(videoId) {
-                            SearchViewController.videoIds.append(videoId)
-                            self.fetchVideoViewCounts(videoId)
-                        } else {
-                            print("🚫 Failed to convert data to UIImage")
-                        }
-                    }
-                    self.nextPageToken = json["nextPageToken"] as? String
-                }
-            case .failure(let error):
-                print("🚫 \(error)")
-            }
-            self.isLoadingData = false
+        if let favoriteVideos = user.favoriteVideos {
+            videos = favoriteVideos
         }
-    }
-
-    private func fetchVideoViewCounts(_ videoId: String) {
-        let request = YoutubeAPI.videoInformation(videoId)
-        print(request)
-        
-        AF.request(request).responseJSON { [weak self] response in
-            guard let self = self else { return }
-            switch response.result {
-            case .success(let data):
-                print(data)
-                print("✅ searchVideoLoad request: success")
-                if let videoInfo = data as? [String: Any],
-                   let items = videoInfo["items"] as? [[String: Any]] {
-                    for item in items {
-                        if let snippet = item["snippet"] as? [String: Any],
-                           let publishedAt = snippet["publishedAt"] as? String,
-                           let title = snippet["title"] as? String,
-                           let thumbnails = snippet["thumbnails"] as? [String: Any],
-                           let maxres = thumbnails["maxres"] as? [String: Any],
-                           let url = maxres["url"] as? String,
-                           let channelTitle = snippet["channelTitle"] as? String,
-                           let statistics = item["statistics"] as? [String: Any],
-                           let viewCount = statistics["viewCount"] as? String {
-                            AF.request(url).responseData { response in
-                                switch response.result {
-                                case .success(let data):
-                                    if let image = UIImage(data: data) {
-                                        self.publishedAts.append(publishedAt)
-                                        self.titles.append(title)
-                                        self.thumbnails.append(image)
-                                        self.viewCounts.append(viewCount)
-                                        self.channelTitles.append(channelTitle)
-                                        self.viewCounts.append(viewCount)
-                                        DispatchQueue.main.async {
-                                            self.collectionView.reloadData()
-                                        }
-                                    } else {
-                                        print("🚫 Failed to convert data to UIImage")
-                                    }
-                                case .failure(let error):
-                                    print("🚫 Image download error: \(error)")
-                                }
-                            }
-                        }
-                    }
-                }
-            case .failure(let error):
-                print("🚫 searchVideoLoad request: \(error)")
-            }
-        }
-    }
-    
-    private func loadMoreData() {
-        loadVideo(pageToken: nextPageToken)
     }
     
     // MARK: - setupUI
@@ -149,37 +64,35 @@ class MyPageFavoriteViewController: UIViewController {
 
 extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return thumbnails.count
+        return user.favoriteVideos!.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeViewCell.identifier, for: indexPath) as? HomeViewCell else {
             fatalError("ERROR")
         }
-        let image = self.thumbnails[indexPath.row]
-        let title = self.titles[indexPath.row]
-        let name = self.channelTitles[indexPath.row]
-        let count = self.viewCounts[indexPath.row]
-        let date = self.publishedAts[indexPath.row]
-        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+        let video = videos[indexPath.row]
+        
+        if let imageUrl = URL(string: video.thumbnailImage),
+           let imageData = try? Data(contentsOf: imageUrl),
+           let image = UIImage(data: imageData) {            let title = video.title
+            let name = video.creatorNickname
+            let count = "\(video.views)"
+            let date = video.uploadDate.description
+            
+            cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+        } else {
+            print("Failed to load image for video at indexPath: \(indexPath)")
+        }
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 디테일페이지에 넘겨주는 비디오 정보(id)
-        let selectedVideo = SearchViewController.videoIds[indexPath.row]
+        let selectedVideo = videos[indexPath.item].id
         navigationController?.pushViewController(DetailPageViewController(videoId: selectedVideo), animated: true)
     }
     
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        let offsetY = scrollView.contentOffset.y
-        let contentHeight = scrollView.contentSize.height
-        let scrollViewHeight = scrollView.frame.size.height
-        
-        if offsetY > contentHeight - scrollViewHeight {
-            if !isLoadingData { loadMoreData() }
-        }
-    }
 }
 
 extension MyPageFavoriteViewController: UICollectionViewDelegateFlowLayout {
