@@ -8,8 +8,8 @@
 import Foundation
 
 struct VideoInformationSearchResponse: Decodable {
-    let kind: String
-    let etag: String
+    let kind: String?
+    let etag: String?
     let items: [VideoItem]
     let pageInfo: PageInfo
     
@@ -19,8 +19,8 @@ struct VideoInformationSearchResponse: Decodable {
     }
     
     struct VideoItem: Decodable {
-        let kind: String
-        let etag: String
+        let kind: String?
+        let etag: String?
         let id: String
         let snippet: Snippet
         let contentDetails: ContentDetails
@@ -33,11 +33,11 @@ struct VideoInformationSearchResponse: Decodable {
             let description: String
             let thumbnails: ThumbnailImages
             let channelTitle: String
-            let tags: [String]
+            let tags: [String]?
             let categoryId: String
             let liveBroadcastContent: String
             let localized: Localized
-            let defaultAudioLanguage: String
+//            let defaultAudioLanguage: String
             
             struct ThumbnailImages: Decodable {
                 let `default`: Thumbnail
@@ -85,7 +85,7 @@ struct VideoInformationSearchResponse: Decodable {
         return VideoInformation(
             title: snippet.title,
             createdAt: snippet.publishedAt,
-            tags: snippet.tags,
+            tags: snippet.tags ?? [],
             viewCount: Int(statics.viewCount) ?? 0,
             commentCount: Int(statics.commentCount) ?? 0,
             likeCount: Int(statics.likeCount) ?? 0,

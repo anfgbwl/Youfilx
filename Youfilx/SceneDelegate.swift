@@ -24,7 +24,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = navigationController
         window?.makeKeyAndVisible()
         
-        showTabBarController()
     }
     
     // 로그인 성공 시 호출될 메서드

@@ -60,7 +60,7 @@ enum YoutubeAPI: TargetType {
             return [
                 "id": videoId,
                 "key": API.key,
-                "part": "snippet%2Cstatistics%2CContentDetails"
+                "part": "snippet,statistics,ContentDetails"
             ]
         case let .commentThread(videoId, nextPageToken):
             return [
@@ -69,7 +69,8 @@ enum YoutubeAPI: TargetType {
                 "part": "snippet",
                 "order": "relevance",
                 "maxResults": "10",
-                "pageToken": nextPageToken ?? ""
+                "pageToken": nextPageToken ?? "",
+                "textFormat": "plainText"
             ]
         case let .commentsList(commentId, nextPageToken):
             return [
@@ -77,13 +78,15 @@ enum YoutubeAPI: TargetType {
                 "key": API.key,
                 "part": "snippet",
                 "maxResults": "10",
-                "pageToken": nextPageToken ?? ""
+                "pageToken": nextPageToken ?? "",
+                "textFormat": "plainText"
             ]
         case let .channel(channelId):
             return [
                 "id": channelId,
                 "key": API.key,
-                "part": "snippet%2Cstatistics"
+                "part": "snippet,statistics"
+            ]
         case let .mostPopularVideos(pageToken):
             return [
                 "part": "snippet,statistics",

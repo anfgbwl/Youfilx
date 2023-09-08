@@ -54,8 +54,9 @@ final class DetailPageViewController: UIViewController {
         $0.spacing = 10
         $0.backgroundColor = .black
     }
-    private lazy var videoMakerImageView = UIImageView().and {
+    private lazy var videoMakerImageView = DImageView().and {
         $0.layer.cornerRadius = 15
+        $0.clipsToBounds = true
     }
     private lazy var videoMakerInformationStackView = UIStackView().and {
         $0.distribution = .fillProportionally
@@ -109,8 +110,9 @@ final class DetailPageViewController: UIViewController {
         $0.distribution = .fill
         $0.spacing = 10
     }
-    private lazy var videoCommenterImageView = UIImageView().and {
+    private lazy var videoCommenterImageView = DImageView().and {
         $0.layer.cornerRadius = 11
+        $0.clipsToBounds = true
     }
     private lazy var videoCommentLabel = UILabel().and {
         $0.textColor = .white
@@ -120,6 +122,7 @@ final class DetailPageViewController: UIViewController {
         $0.setImage(UIImage(systemName: "chevron.down")?.withTintColor(.white, renderingMode: .alwaysOriginal), for: .normal)
     }
     private let videoId: String
+    private let apiManager = APIManager.shared
     
     init(videoId: String) {
         self.videoId = videoId
@@ -228,11 +231,17 @@ extension DetailPageViewController {
         do {
             let videoInformation = try await APIManager.shared.request(YoutubeAPI.videoInformation(videoId)).toObject(VideoInformationSearchResponse.self).toVideoInformation()
             videoTitleLabel.text = videoInformation.title
-            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+"#"+$1 }))"
+            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
             videoMakerNameLabel.text = videoInformation.channelName
+            videoLikeButton.setTitle("\(videoInformation.likeCount)", for: .normal)
+            videoCommentCountLabel.text = "\(videoInformation.commentCount)"
             let channelId = videoInformation.channelId
             let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
             videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+            videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
+            let commentInformation = try await apiManager.request(YoutubeAPI.commentThread(videoId)).toObject(CommentThreadResponse.self).toCommentThreadInformation()
+            videoCommentLabel.text = commentInformation?.textDisplay
+            videoCommenterImageView.fetchImage(commentInformation?.authorProfileImageUrl ?? "")
         } catch {
             print(error)
         }

@@ -8,8 +8,8 @@
 import Foundation
 
 struct CommentThreadResponse: Decodable {
-    let kind: String
-    let etag: String
+    let kind: String?
+    let etag: String?
     let nextPageToken: String
     let pageInfo: PageInfo
     
@@ -21,8 +21,8 @@ struct CommentThreadResponse: Decodable {
     }
     
     struct CommentThread: Decodable {
-        let kind: String
-        let etag: String
+        let kind: String?
+        let etag: String?
         let id: String
         let snippet: Snippet
         
@@ -62,6 +62,26 @@ struct CommentThreadResponse: Decodable {
                 
             }
         }
+    }
+    
+    func toCommentThreadInformation() -> CommentThreadInformation? {
+        if items.count == 0 {
+            return nil
+        }
+        let item = items[0]
+        let snippet = item.snippet
+        let topCommentSnippet = snippet.topLevelComment.snippet
+        return CommentThreadInformation(
+            id: snippet.topLevelComment.id,
+            channelId: snippet.channelId,
+            videoId: snippet.videoId,
+            textDisplay: topCommentSnippet.textDisplay,
+            authorDisplayName: topCommentSnippet.authorDisplayName,
+            authorProfileImageUrl: topCommentSnippet.authorProfileImageUrl,
+            authorChannelId: topCommentSnippet.authorChannelId.value,
+            likeCount: topCommentSnippet.likeCount,
+            totalReplyCount: snippet.totalReplyCount
+        )
     }
     
 }
