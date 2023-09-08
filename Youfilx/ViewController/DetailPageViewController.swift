@@ -72,10 +72,10 @@ final class DetailPageViewController: UIViewController {
         $0.font = .systemFont(ofSize: 12, weight: .thin)
     }
     private lazy var videoLikeButton = ImageChangableWhenSelectedButton(
-        normalImage: .checkmark,
-        selectedImage: .add,
-        checked: { checked in
-        // 버튼 누르면 찜한 목록 추가 되도록
+        normalImage: .thumbUpNormal,
+        selectedImage: .thumbUpFill,
+        checked: { [weak self] checked in
+            self?.likeAction(checked)
     }).and {
         $0.setTitle("1.6천", for: .normal)
         $0.setTitleColor(UIColor.white, for: .normal)
@@ -246,6 +246,36 @@ extension DetailPageViewController {
     
     private func prepareView(videoId: String) {
         
+        stateSetting(videoId: videoId)
+        
+        youtubeView.loadYoutube(videoId: videoId)
+        guard let user = loadUserFromUserDefaults() else {
+            return
+        }
+        
+        if let favoriteList = user.favoriteVideos {
+            if favoriteList.map({ $0.id }).contains(videoId) {
+                videoLikeButton.checkImageAdjust(true)
+            } else {
+                videoLikeButton.checkImageAdjust(false)
+            }
+        }
+
+        guard let watchHistory = user.watchHistory else {
+            return
+        }
+        guard let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) else {
+            return
+        }
+        let video = watchHistory[videoIndex]
+        guard let videoStartTime = video.currentTime else {
+            return
+        }
+        youtubeView.loadYoutube(videoId: videoId, startTime: videoStartTime, isAutoPlay: true)
+        
+    }
+    
+    private func stateSetting(videoId: String) {
         youtubeView.state = { [weak self] state in
             guard let self else {return}
             if state == .playing {
@@ -263,22 +293,6 @@ extension DetailPageViewController {
                 saveUserToUserDefaults(user: user)
             }
         }
-        youtubeView.loadYoutube(videoId: videoId)
-        guard let user = loadUserFromUserDefaults() else {
-            return
-        }
-        guard let watchHistory = user.watchHistory else {
-            return
-        }
-        guard let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) else {
-            return
-        }
-        let video = watchHistory[videoIndex]
-        guard let videoStartTime = video.currentTime else {
-            return
-        }
-        youtubeView.loadYoutube(videoId: videoId, startTime: videoStartTime, isAutoPlay: true)
-        
     }
     
     private func loadDatas() async {
@@ -305,6 +319,32 @@ extension DetailPageViewController {
             print(error)
         }
     }
- 
+    
+    private func likeAction(_ isChecked: Bool) {
+        guard var user = loadUserFromUserDefaults() else {
+            return
+        }
+        guard var favoriteList = user.favoriteVideos else {
+            return
+        }
+        if isChecked {
+            if let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) {
+                favoriteList.remove(at: videoIndex)
+            }
+            favoriteList = [currentVideo] + favoriteList
+        } else {
+            guard let videoIndex = favoriteList.firstIndex(where: { $0.id == videoId }) else {
+                return
+            }
+            favoriteList.remove(at: videoIndex)
+        }
+        user.favoriteVideos = favoriteList
+        saveUserToUserDefaults(user: user)
+    }
+    
 }
 
+extension UIImage {
+    static let thumbUpNormal = UIImage(systemName: "hand.thumbsup")
+    static let thumbUpFill = UIImage(systemName: "hand.thumbsup.fill")
+}

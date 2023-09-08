@@ -33,5 +33,9 @@ class ImageChangableWhenSelectedButton: UIButton {
         setImage(isChecked ? selectedImage : normalImage, for: .normal)
         checked?(isChecked)
     }
+    
+    func checkImageAdjust(_ isCheck: Bool) {
+        setImage(isCheck ? selectedImage : normalImage, for: .normal)
+    }
 
 }

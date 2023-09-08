@@ -60,7 +60,6 @@ public class YoutubeView: UIView {
                 isAutoPlay: isAutoPlay
             )
             webView.loadHTMLString(youtubeHTML, baseURL: URL(string: "about:blank"))
-            unMute()
         } catch {
             print(error)
         }
