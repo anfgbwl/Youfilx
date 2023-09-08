@@ -43,6 +43,23 @@ class HomeViewController: UIViewController {
         loadVideo()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        // 수정된 정보를 가져와 화면에 표시
+        loadAccount()
+    }
+    
+    // MARK: - Load Account
+    // 사용자 정보를 다시 불러와서 화면에 표시하는 메서드
+    private func loadAccount() {
+        // 사용자 정보를 UserDefaults에서 가져옴
+        if let loadedUser = loadUserFromUserDefaults() {
+            user = loadedUser
+            self.navigationItem.rightBarButtonItems?[1].title = "\(user.nickname)님"
+        }
+    }
+    
     // MARK: - YouTube Video Load
     private func loadVideo(pageToken: String? = nil) {
         guard !isLoadingData else { return }
