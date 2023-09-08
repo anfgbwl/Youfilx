@@ -64,25 +64,24 @@ struct CommentThreadResponse: Decodable {
         }
     }
     
-    func toCommentThreadInformations() -> [CommentThreadInformation]? {
+    func toCommentThreadInformation() -> CommentThreadInformation? {
         if items.count == 0 {
             return nil
         }
-        return items.map { item in
-            let snippet = item.snippet
-            let topCommentSnippet = snippet.topLevelComment.snippet
-            return CommentThreadInformation(
-                id: snippet.topLevelComment.id,
-                channelId: snippet.channelId,
-                videoId: snippet.videoId,
-                textDisplay: topCommentSnippet.textDisplay,
-                authorDisplayName: topCommentSnippet.authorDisplayName,
-                authorProfileImageUrl: topCommentSnippet.authorProfileImageUrl,
-                authorChannelId: topCommentSnippet.authorChannelId.value,
-                likeCount: topCommentSnippet.likeCount,
-                totalReplyCount: snippet.totalReplyCount
-            )
-        }
+        let item = items[0]
+        let snippet = item.snippet
+        let topCommentSnippet = snippet.topLevelComment.snippet
+        return CommentThreadInformation(
+            id: snippet.topLevelComment.id,
+            channelId: snippet.channelId,
+            videoId: snippet.videoId,
+            textDisplay: topCommentSnippet.textDisplay,
+            authorDisplayName: topCommentSnippet.authorDisplayName,
+            authorProfileImageUrl: topCommentSnippet.authorProfileImageUrl,
+            authorChannelId: topCommentSnippet.authorChannelId.value,
+            likeCount: topCommentSnippet.likeCount,
+            totalReplyCount: snippet.totalReplyCount
+        )
     }
     
 }

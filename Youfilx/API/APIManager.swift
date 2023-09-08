@@ -15,7 +15,7 @@ class APIManager {
     func request(_ type: TargetType, completion: @escaping ((Result<Data, AFError>) -> Void)) {
         AF.request(type)
             .response { response in
-//                debugPrint(response)
+                debugPrint(response)
                 if let error = response.error {
                     completion(.failure(error))
                 }

@@ -7,10 +7,10 @@
 
 import Foundation
 
-struct CommentThreadInformation: Hashable {
+struct CommentThreadInformation {
     let id: String
     let channelId: String
-    let videoId: String?
+    let videoId: String
     let textDisplay: String
     let authorDisplayName: String
     let authorProfileImageUrl: String
