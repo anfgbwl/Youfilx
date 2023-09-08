@@ -29,14 +29,6 @@ class MyPageViewCell: UITableViewCell {
         return label
     }()
     
-    private lazy var stackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [image, label])
-        stackView.axis = .horizontal
-        stackView.alignment = .center
-        stackView.spacing = 20
-        return stackView
-    }()
-    
     // MARK: - Configure
     public func configure(image: UIImage, label: String) {
         self.image.image = image
@@ -46,13 +38,21 @@ class MyPageViewCell: UITableViewCell {
     
     // MARK: - setupUI
     private func setupUI() {
-        self.contentView.addSubview(stackView)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
+        self.contentView.addSubview(image)
+        self.contentView.addSubview(label)
+        image.translatesAutoresizingMaskIntoConstraints = false
+        label.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: self.contentView.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
-            stackView.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 20),
+            image.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            image.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            image.leadingAnchor.constraint(equalTo: self.contentView.leadingAnchor, constant: 20),
+            image.widthAnchor.constraint(equalToConstant: 30),
+            image.heightAnchor.constraint(equalToConstant: 30),
+            
+            label.topAnchor.constraint(equalTo: self.contentView.topAnchor),
+            label.bottomAnchor.constraint(equalTo: self.contentView.bottomAnchor),
+            label.leadingAnchor.constraint(equalTo: self.image.trailingAnchor, constant: 20),
         ])
     }
 }
