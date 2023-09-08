@@ -123,9 +123,11 @@ final class DetailPageViewController: UIViewController {
     }
     private let videoId: String
     private let apiManager = APIManager.shared
+    private var currentVideo = Video()
     
     init(videoId: String) {
         self.videoId = videoId
+        currentVideo.id = videoId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -141,6 +143,25 @@ extension DetailPageViewController {
 
         configure()
         
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        youtubeView.getCurrentTime { [weak self] currentTime in
+            guard let self else {return}
+            let currentTimeInt = Int(currentTime)
+            guard var user = loadUserFromUserDefaults() else {return}
+            guard var watchHistory = user.watchHistory else {return}
+            guard let videoIndex = watchHistory.firstIndex(where: { $0.id == self.videoId }) else {
+                return
+            }
+            var video = watchHistory[videoIndex]
+            video.currentTime = currentTimeInt
+            watchHistory[videoIndex] = video
+            user.watchHistory = watchHistory
+            saveUserToUserDefaults(user: user)
+        }
     }
 }
 
@@ -224,7 +245,40 @@ extension DetailPageViewController {
     }
     
     private func prepareView(videoId: String) {
+        
+        youtubeView.state = { [weak self] state in
+            guard let self else {return}
+            if state == .playing {
+                guard var user = loadUserFromUserDefaults() else {
+                    return
+                }
+                guard var watchHistory = user.watchHistory else {
+                    return
+                }
+                if let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) {
+                    watchHistory.remove(at: videoIndex)
+                }
+                watchHistory = [self.currentVideo] + watchHistory
+                user.watchHistory = watchHistory
+                saveUserToUserDefaults(user: user)
+            }
+        }
         youtubeView.loadYoutube(videoId: videoId)
+        guard let user = loadUserFromUserDefaults() else {
+            return
+        }
+        guard let watchHistory = user.watchHistory else {
+            return
+        }
+        guard let videoIndex = watchHistory.firstIndex(where: { $0.id == videoId }) else {
+            return
+        }
+        let video = watchHistory[videoIndex]
+        guard let videoStartTime = video.currentTime else {
+            return
+        }
+        youtubeView.loadYoutube(videoId: videoId, startTime: videoStartTime, isAutoPlay: true)
+        
     }
     
     private func loadDatas() async {
@@ -235,6 +289,11 @@ extension DetailPageViewController {
             videoMakerNameLabel.text = videoInformation.channelName
             videoLikeButton.setTitle("\(videoInformation.likeCount)", for: .normal)
             videoCommentCountLabel.text = "\(videoInformation.commentCount)"
+            currentVideo.thumbnailImage = videoInformation.thumbnailURL
+            currentVideo.title = videoInformation.title
+            currentVideo.creatorNickname = videoInformation.channelName
+            currentVideo.views = videoInformation.viewCount
+            currentVideo.duration = videoInformation.duration
             let channelId = videoInformation.channelId
             let channelInformation = try await APIManager.shared.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation()
             videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount

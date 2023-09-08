@@ -8,12 +8,13 @@
 import Foundation
 
 struct Video: Codable {
-    let id: String
-    let thumbnailImage: String
-    let title: String
-    let creatorNickname: String
-    let views: Int
-    let duration: String
-    let uploadDate: Date
-    var comments: [Comment]
+    var id: String = ""
+    var thumbnailImage: String = ""
+    var title: String = ""
+    var creatorNickname: String = ""
+    var views: Int = 0
+    var duration: String = ""
+    var uploadDate: Date = .init()
+    var comments: [Comment] = []
+    var currentTime: Int?
 }

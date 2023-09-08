@@ -16,4 +16,6 @@ struct VideoInformation {
     let likeCount: Int
     let channelId: String
     let channelName: String
+    let thumbnailURL: String
+    let duration: String
 }

@@ -60,6 +60,7 @@ public class YoutubeView: UIView {
                 isAutoPlay: isAutoPlay
             )
             webView.loadHTMLString(youtubeHTML, baseURL: URL(string: "about:blank"))
+            unMute()
         } catch {
             print(error)
         }
@@ -146,6 +147,14 @@ public class YoutubeView: UIView {
                 completion?(result)
             }
         }
+    }
+    
+    public func unMute() {
+        evaluateJavaScript(command: "unMute")
+    }
+    
+    public func mute() {
+        evaluateJavaScript(command: "mute")
     }
     
     private func evaluateJavaScript(command: String, completion: ((Any?) -> Void)? = nil) {
