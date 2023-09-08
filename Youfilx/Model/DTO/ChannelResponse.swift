@@ -63,7 +63,7 @@ struct ChannelResponse: Decodable {
             channelId: item.id,
             title: snippet.title,
             publishedAt: snippet.publishedAt,
-            thumbnailURL: thumbnails.default.url,
+            thumbnailURL: thumbnails.high.url,
             viewCount: item.statistics.viewCount,
             subscriberCount: item.statistics.subscriberCount,
             videoCount: item.statistics.videoCount

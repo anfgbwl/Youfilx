@@ -49,6 +49,11 @@ class MyPageFavoriteViewController: UIViewController {
     private func setupUI() {
         view.backgroundColor = .systemBackground
         
+        // Navigation Bar
+        self.navigationItem.title = "찜한영상"
+        navigationController?.navigationBar.tintColor = .label
+        navigationController?.navigationBar.topItem?.title = ""
+        
         // CollectionView
         self.view.addSubview(collectionView)
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -73,16 +78,21 @@ extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionVi
         }
         let video = videos[indexPath.row]
         
-        if let imageUrl = URL(string: video.thumbnailImage),
-           let imageData = try? Data(contentsOf: imageUrl),
-           let image = UIImage(data: imageData) {            let title = video.title
-            let name = video.creatorNickname
-            let count = "\(video.views)"
-            let date = video.uploadDate.description
-            
-            cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
-        } else {
-            print("Failed to load image for video at indexPath: \(indexPath)")
+        if let imageUrl = URL(string: video.thumbnailImage) {
+            let task = URLSession.shared.dataTask(with: imageUrl) { (data, response, error) in
+                if let imageData = data, let image = UIImage(data: imageData) {
+                    DispatchQueue.main.async {
+                        let title = video.title
+                        let name = video.creatorNickname
+                        let count = "\(video.views)"
+                        let date = ISO8601DateFormatter().string(from: video.uploadDate)
+                        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                    }
+                } else {
+                    print("🚫 썸네일 이미지 로드 오류: \(indexPath)")
+                }
+            }
+            task.resume()
         }
         return cell
     }
