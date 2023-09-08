@@ -56,6 +56,7 @@ class HomeViewController: UIViewController {
             guard let self = self else { return }
             switch response.result {
             case .success(let data):
+                print(data)
                 if let json = data as? [String: Any], let items = json["items"] as? [[String: Any]] {
                     for item in items {
                         if let id = item["id"] as? String,
