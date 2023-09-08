@@ -195,7 +195,7 @@ class LoginViewController: UIViewController {
     @objc func loginButtonTapped() {
         guard let enteredEmail = emailTextField.text, !enteredEmail.isEmpty,
               let enteredPassword = passwordTextField.text, !enteredPassword.isEmpty,
-              let savedUser = loadUserFromUserDefaults() else { return }
+              var user = loadUserFromUserDefaults() else { return }
         
         // 이메일 형식 검증
         if !isValidEmail(enteredEmail) {
@@ -203,10 +203,12 @@ class LoginViewController: UIViewController {
             return
         }
         
-        if enteredEmail == savedUser.id && enteredPassword == savedUser.password {
-            // 로그인 성공 시 사용자 정보를 homeViewController에 전달 
+        if enteredEmail == user.id && enteredPassword == user.password {
+            // 로그인 성공 시 사용자 정보를 homeViewController에 전달
             let homeViewController = HomeViewController()
-            homeViewController.user = savedUser
+            user.isLoggedIn = true
+            UserDefaults.standard.set(true, forKey: "isLoggedIn")
+            homeViewController.user = user
             navigationController?.pushViewController(homeViewController, animated: true)
             
             loginCompletion?()
