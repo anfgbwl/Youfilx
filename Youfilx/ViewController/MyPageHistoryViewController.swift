@@ -10,6 +10,7 @@ class MyPageHistoryViewController: UIViewController {
     private var isLoadingData = false
     private var nextPageToken: String?
     private var thumbnails: [UIImage] = []
+    private var channelImages: [UIImage] = []
     private var titles: [String] = []
     private var channelTitles: [String] = []
     private var viewCounts: [String] = []
@@ -67,10 +68,10 @@ class MyPageHistoryViewController: UIViewController {
     
     // MARK: - YouTube Video Load for Watch History
     private func loadVideoForWatchHistoryIfNeeded() {
-        startLoading()
-        print("시청 기록 순서 확인: \(watchHistory)")
         guard !isLoadingData else { return }
         isLoadingData = true
+        startLoading()
+        print("시청 기록 순서 확인: \(watchHistory)")
 
         // 비디오 정보를 가져오는 인덱스 변수
         var currentIndex = 0
@@ -85,12 +86,13 @@ class MyPageHistoryViewController: UIViewController {
                     guard let self = self else { return }
                     switch response.result {
                     case .success(let data):
-                        print(data)
+//                        print(data)
                         if let json = data as? [String: Any], let items = json["items"] as? [[String: Any]], let item = items.first {
                             if let snippet = item["snippet"] as? [String: Any],
                                let statistics = item["statistics"] as? [String: Any],
                                let viewCount = statistics["viewCount"] as? String,
                                let publishedAt = snippet["publishedAt"] as? String,
+                               let channelId = snippet["channelId"] as? String,
                                let title = snippet["title"] as? String,
                                let thumbnails = snippet["thumbnails"] as? [String: Any],
                                let maxres = thumbnails["maxres"] as? [String: Any],
@@ -101,12 +103,13 @@ class MyPageHistoryViewController: UIViewController {
                                     case .success(let data):
                                         if let image = UIImage(data: data) {
                                             // 배열에 순서대로 추가
-                                            self.thumbnails.append(image)
-                                            self.titles.append(title)
-                                            self.channelTitles.append(channelTitle)
-                                            self.viewCounts.append(viewCount)
-                                            self.publishedAts.append(publishedAt)
-
+//                                            self.fetchChannelThumbnail(channelId) { channelImage in
+                                                self.thumbnails.append(image)
+                                                self.titles.append(title)
+                                                self.channelTitles.append(channelTitle)
+                                                self.viewCounts.append(viewCount)
+                                                self.publishedAts.append(publishedAt)
+//                                            }
                                             // 다음 비디오 정보 가져오기
                                             currentIndex += 1
                                             loadNextVideo()
@@ -131,11 +134,41 @@ class MyPageHistoryViewController: UIViewController {
                 stopLoading() // 로딩 종료
             }
         }
-
         // 첫 번째 비디오 정보 가져오기 시작
         loadNextVideo()
     }
-
+    
+    private func fetchChannelThumbnail(_ channelId: String, completion: @escaping (UIImage) -> Void) {
+        // YouTube API 채널 정보 요청 생성
+        let request = YoutubeAPI.channel(channelId)
+        
+        AF.request(request).responseDecodable(of: ChannelResponse.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let channelResponse):
+                if let channelInformation = channelResponse.toChannelInformation() {
+                    // channelInformation.thumbnailURL를 사용하여 채널 썸네일을 가져옴
+                    if let thumbnailUrl = URL(string: channelInformation.thumbnailURL) {
+                        AF.request(thumbnailUrl).responseData { response in
+                            switch response.result {
+                            case .success(let data):
+                                if let channelImage = UIImage(data: data) {
+                                    self.channelImages.append(channelImage)
+                                    completion(channelImage)
+                                } else {
+                                    print("🚫 Failed to convert data to UIImage")
+                                }
+                            case .failure(let error):
+                                print("🚫 Image download error: \(error)")
+                            }
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("🚫 \(error)")
+            }
+        }
+    }
     
     // MARK: - setupUI
     private func setupUI() {
@@ -191,6 +224,7 @@ extension MyPageHistoryViewController: UICollectionViewDelegate, UICollectionVie
         
         if indexPath.row < thumbnails.count {
             let image = thumbnails[indexPath.row]
+//            let channelImage = self.channelImages[indexPath.row]
             let title = titles[indexPath.row]
             let name = channelTitles[indexPath.row]
             let count = viewCounts[indexPath.row]

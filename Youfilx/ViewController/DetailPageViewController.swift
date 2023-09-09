@@ -341,6 +341,8 @@ extension DetailPageViewController {
             currentVideo.creatorNickname = videoInformation.channelName
             currentVideo.views = videoInformation.viewCount
             currentVideo.duration = videoInformation.duration
+            currentVideo.uploadDate = videoInformation.createdAt
+            currentVideo.channelId = videoInformation.channelId
             let channelId = videoInformation.channelId
             
             if let channelInformation = try await apiManager.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation() {

@@ -43,6 +43,7 @@ class MyPageFavoriteViewController: UIViewController {
         if let favoriteVideos = user.favoriteVideos {
             videos = favoriteVideos
         }
+        self.collectionView.reloadData()
     }
     
     // MARK: - setupUI
@@ -69,7 +70,7 @@ class MyPageFavoriteViewController: UIViewController {
 
 extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return user.favoriteVideos!.count
+        return user.favoriteVideos?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -85,7 +86,7 @@ extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionVi
                         let title = video.title
                         let name = video.creatorNickname
                         let count = "\(video.views)"
-                        let date = ISO8601DateFormatter().string(from: video.uploadDate)
+                        let date = video.uploadDate
                         cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
                     }
                 } else {
