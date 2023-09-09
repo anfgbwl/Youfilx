@@ -87,7 +87,38 @@ extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionVi
                         let name = video.creatorNickname
                         let count = "\(video.views)"
                         let date = video.uploadDate
-                        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                        // 채널 아이디를 사용하여 채널 정보를 가져옴
+                        self.fetchChannelInfo(forChannelId: video.channelId) { channelInfo in
+                            if let channelInfo = channelInfo {
+                                // 채널 정보를 활용하여 cell.configure 호출
+                                if let channelImageUrl = URL(string: channelInfo.snippet.thumbnails.default.url) {
+                                    let channelImageTask = URLSession.shared.dataTask(with: channelImageUrl) { (channelImageData, _, _) in
+                                        if let channelImageData = channelImageData, let channelImage = UIImage(data: channelImageData) {
+                                            DispatchQueue.main.async {
+                                                cell.configure(video: image, image: channelImage, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                                            }
+                                        } else {
+                                            DispatchQueue.main.async {
+                                                cell.configure(video: image, image: UIImage(named: "person.fill")!, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                                            }
+                                            print("🚫 채널 이미지 로드 오류: \(indexPath)")
+                                        }
+                                    }
+                                    channelImageTask.resume()
+                                } else {
+                                    DispatchQueue.main.async {
+                                        cell.configure(video: image, image: UIImage(named: "person.fill")!, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                                    }
+                                    print("🚫 채널 이미지 URL 오류: \(indexPath)")
+                                }
+                            } else {
+                                // 채널 정보를 가져오지 못한 경우에 대한 처리
+                                DispatchQueue.main.async {
+                                    cell.configure(video: image, image: UIImage(named: "person.fill")!, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+                                }
+                                print("🚫 채널 정보 로드 오류: \(indexPath)")
+                            }
+                        }
                     }
                 } else {
                     print("🚫 썸네일 이미지 로드 오류: \(indexPath)")
@@ -115,5 +146,25 @@ extension MyPageFavoriteViewController: UICollectionViewDelegateFlowLayout {
     // Vertical Spacing
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 80
+    }
+}
+
+extension MyPageFavoriteViewController {
+    private func fetchChannelInfo(forChannelId channelId: String, completion: @escaping (ChannelResponse.ChannelItem?) -> Void) {
+        let request = YoutubeAPI.channel(channelId)
+
+        AF.request(request).responseDecodable(of: ChannelResponse.self) { response in
+            switch response.result {
+            case .success(let channelResponse):
+                if let channelItem = channelResponse.items.first {
+                    completion(channelItem)
+                } else {
+                    completion(nil)
+                }
+            case .failure(let error):
+                print("🚫 채널 정보 로드 오류: \(error)")
+                completion(nil)
+            }
+        }
     }
 }
