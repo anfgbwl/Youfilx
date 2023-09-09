@@ -212,6 +212,10 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         // 로그아웃 상태로 업데이트
         UserDefaults.standard.set(false, forKey: "isLoggedIn")
         
+        // 기존 사용자 정보 초기화
+        var user = loadUserFromUserDefaults()
+        user?.isLoggedIn = false
+        saveUserToUserDefaults(user: user!)
         
         // 로그인 화면으로 이동
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {

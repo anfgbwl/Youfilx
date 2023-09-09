@@ -123,7 +123,6 @@ class LoginViewController: UIViewController {
     
     // MARK: - 유효성 검사에 사용할 정규식
     private let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}"
-    private let passwordRegex = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -196,13 +195,13 @@ class LoginViewController: UIViewController {
         guard let enteredEmail = emailTextField.text, !enteredEmail.isEmpty,
               let enteredPassword = passwordTextField.text, !enteredPassword.isEmpty,
               var user = loadUserFromUserDefaults() else { return }
-        
+
         // 이메일 형식 검증
         if !isValidEmail(enteredEmail) {
             showAlert(title: "이메일 형식 오류", message: "올바른 이메일 주소를 입력하세요.")
             return
         }
-        
+
         if enteredEmail == user.id && enteredPassword == user.password {
             // 로그인 성공 시 사용자 정보를 homeViewController에 전달
             let homeViewController = HomeViewController()
@@ -210,10 +209,11 @@ class LoginViewController: UIViewController {
             UserDefaults.standard.set(true, forKey: "isLoggedIn")
             homeViewController.user = user
             navigationController?.pushViewController(homeViewController, animated: true)
-            
+
             loginCompletion?()
         } else {
-            showAlert(title: "로그인 실패", message: "이메일 또는 비밀번호가 일치하지 않습니다.")
+            // 입력된 이메일 또는 비밀번호가 일치하지 않는 경우
+            showAlert(title: "로그인 실패", message: "이메일 주소 또는 비밀번호가 일치하지 않습니다.")
         }
     }
     

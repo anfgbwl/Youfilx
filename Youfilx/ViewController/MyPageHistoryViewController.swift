@@ -51,7 +51,7 @@ class MyPageHistoryViewController: UIViewController {
         
 //        // 시청한 비디오 목록을 가져와서 화면에 표시
 //        watchHistory = loadWatchHistory() ?? []
-//        loadVideoForWatchHistoryIfNeeded() // 뷰가 나타날 때 한 번만 호출
+//        loadVideo()
     }
     
     // MARK: - Load Account
