@@ -43,7 +43,7 @@ class MyPageHistoryViewController: UIViewController {
         self.collectionView.delegate = self
         self.collectionView.dataSource = self
         watchHistory = loadWatchHistory() ?? []
-        loadVideoForWatchHistoryIfNeeded() // 뷰가 나타날 때 한 번만 호출
+        loadVideo() // 뷰가 나타날 때 한 번만 호출
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -67,7 +67,7 @@ class MyPageHistoryViewController: UIViewController {
     }
     
     // MARK: - YouTube Video Load for Watch History
-    private func loadVideoForWatchHistoryIfNeeded() {
+    private func loadVideo() {
         guard !isLoadingData else { return }
         isLoadingData = true
         startLoading()
@@ -103,13 +103,16 @@ class MyPageHistoryViewController: UIViewController {
                                     case .success(let data):
                                         if let image = UIImage(data: data) {
                                             // 배열에 순서대로 추가
-//                                            self.fetchChannelThumbnail(channelId) { channelImage in
+                                            self.fetchChannelThumbnail(channelId) { channelImage in
                                                 self.thumbnails.append(image)
                                                 self.titles.append(title)
                                                 self.channelTitles.append(channelTitle)
                                                 self.viewCounts.append(viewCount)
                                                 self.publishedAts.append(publishedAt)
-//                                            }
+                                                DispatchQueue.main.async {
+                                                    self.collectionView.reloadData()
+                                                }
+                                            }
                                             // 다음 비디오 정보 가져오기
                                             currentIndex += 1
                                             loadNextVideo()
@@ -221,17 +224,13 @@ extension MyPageHistoryViewController: UICollectionViewDelegate, UICollectionVie
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HomeViewCell.identifier, for: indexPath) as? HomeViewCell else {
             fatalError("ERROR")
         }
-        
-        if indexPath.row < thumbnails.count {
-            let image = thumbnails[indexPath.row]
-//            let channelImage = self.channelImages[indexPath.row]
-            let title = titles[indexPath.row]
-            let name = channelTitles[indexPath.row]
-            let count = viewCounts[indexPath.row]
-            let date = publishedAts[indexPath.row]
-            cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
-        }
-        
+        let image = self.thumbnails[indexPath.row]
+        let channelImage = self.channelImages[indexPath.row]
+        let title = self.titles[indexPath.row]
+        let name = self.channelTitles[indexPath.row]
+        let count = self.viewCounts[indexPath.row]
+        let date = self.publishedAts[indexPath.row]
+        cell.configure(video: image, image: channelImage, title: title, channelTitle: name, viewCount: count, publishedAt: date)
         return cell
     }
     

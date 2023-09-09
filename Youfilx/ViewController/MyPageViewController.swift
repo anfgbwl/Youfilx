@@ -179,7 +179,13 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             present(alert, animated: true, completion: nil)
         case 4:
             // 회원탈퇴 기능
-            break
+            let alert = UIAlertController(title: "회원탈퇴", message: "회원 탈퇴하시겠습니까??", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .destructive, handler: { [weak self] _ in
+                // 사용자 회원 탈퇴 처리
+                self?.performResign()
+            }))
+            alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
+            present(alert, animated: true, completion: nil)
         default:
             break
         }
@@ -194,6 +200,18 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         var user = loadUserFromUserDefaults()
         user?.isLoggedIn = false
         saveUserToUserDefaults(user: user!)
+        
+        // 로그인 화면으로 이동
+        if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
+            sceneDelegate.showLoginViewController()
+        }
+    }
+    
+    // 사용자 로그아웃 처리
+    func performResign() {
+        // 로그아웃 상태로 업데이트
+        UserDefaults.standard.set(false, forKey: "isLoggedIn")
+        
         
         // 로그인 화면으로 이동
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
