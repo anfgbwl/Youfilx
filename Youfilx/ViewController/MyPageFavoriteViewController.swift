@@ -43,6 +43,7 @@ class MyPageFavoriteViewController: UIViewController {
         if let favoriteVideos = user.favoriteVideos {
             videos = favoriteVideos
         }
+        self.collectionView.reloadData()
     }
     
     // MARK: - setupUI
