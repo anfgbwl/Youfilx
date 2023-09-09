@@ -111,7 +111,7 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         let button = UIButton()
         button.setTitle("저장", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .darkGray
+        button.backgroundColor = #colorLiteral(red: 0.8580306172, green: 0.1295066774, blue: 0.1757571995, alpha: 1)
         button.layer.cornerRadius = 8
         return button
     }()
