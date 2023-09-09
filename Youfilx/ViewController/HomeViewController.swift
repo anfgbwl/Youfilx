@@ -11,7 +11,6 @@ import Alamofire
 class HomeViewController: UIViewController {
     
     // 사용자 정보
-
     var user: User = loadUserFromUserDefaults()!
     
     // MARK: - Variables
