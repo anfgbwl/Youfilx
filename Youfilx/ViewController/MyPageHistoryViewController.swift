@@ -103,13 +103,14 @@ class MyPageHistoryViewController: UIViewController {
                                     case .success(let data):
                                         if let image = UIImage(data: data) {
                                             // 배열에 순서대로 추가
-//                                            self.fetchChannelThumbnail(channelId) { channelImage in
+                                            self.fetchChannelThumbnail(channelId) { channelImage in
+                                                print(self.channelImages)
                                                 self.thumbnails.append(image)
                                                 self.titles.append(title)
                                                 self.channelTitles.append(channelTitle)
                                                 self.viewCounts.append(viewCount)
                                                 self.publishedAts.append(publishedAt)
-//                                            }
+                                            }
                                             // 다음 비디오 정보 가져오기
                                             currentIndex += 1
                                             loadNextVideo()
@@ -224,7 +225,7 @@ extension MyPageHistoryViewController: UICollectionViewDelegate, UICollectionVie
         
         if indexPath.row < thumbnails.count {
             let image = thumbnails[indexPath.row]
-//            let channelImage = self.channelImages[indexPath.row]
+            let channelImage = channelImages[indexPath.row]
             let title = titles[indexPath.row]
             let name = channelTitles[indexPath.row]
             let count = viewCounts[indexPath.row]
