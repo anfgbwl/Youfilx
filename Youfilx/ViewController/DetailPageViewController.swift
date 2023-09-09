@@ -212,6 +212,10 @@ extension DetailPageViewController {
     }
     
     private func layout() {
+        // Navigation Bar
+        navigationController?.navigationBar.tintColor = .label
+        navigationController?.navigationBar.topItem?.title = ""
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
         youtubeView.translatesAutoresizingMaskIntoConstraints = false
@@ -332,10 +336,10 @@ extension DetailPageViewController {
                 return
             }
             videoTitleLabel.text = videoInformation.title
-            videoInformationLabel.text = "조회수 \(videoInformation.viewCount)회 \(videoInformation.createdAt) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
+            videoInformationLabel.text = "조회수 \(customFormattedViewsCount("\(videoInformation.viewCount)")) \(timeAgoSinceDate(videoInformation.createdAt)) \(videoInformation.tags.reduce("", { $0+" #"+$1 }))"
             videoMakerNameLabel.text = videoInformation.channelName
-            videoLikeButton.setTitle("\(videoInformation.likeCount)", for: .normal)
-            videoCommentCountLabel.text = "\(videoInformation.commentCount)"
+            videoLikeButton.setTitle("\(customFormattedCount(videoInformation.likeCount))", for: .normal)
+            videoCommentCountLabel.text = "\(customFormattedCount(videoInformation.commentCount))"
             currentVideo.thumbnailImage = videoInformation.thumbnailURL
             currentVideo.title = videoInformation.title
             currentVideo.creatorNickname = videoInformation.channelName
@@ -346,7 +350,7 @@ extension DetailPageViewController {
             let channelId = videoInformation.channelId
             
             if let channelInformation = try await apiManager.request(YoutubeAPI.channel(channelId)).toObject(ChannelResponse.self).toChannelInformation() {
-                videoMakerSubscriberCountLabel.text = channelInformation.subscriberCount
+                videoMakerSubscriberCountLabel.text = "\(customFormattedCount(Int(channelInformation.subscriberCount)!))"
                 videoMakerImageView.fetchImage(channelInformation.thumbnailURL)
             }
 
@@ -380,6 +384,77 @@ extension DetailPageViewController {
         }
         user.favoriteVideos = favoriteList
         saveUserToUserDefaults(user: user)
+    }
+    
+}
+
+extension DetailPageViewController {
+    
+    // MARK: - ViewCount Format
+    private func customFormattedViewsCount(_ viewsCount: String) -> String {
+        if let viewsCount = Int(viewsCount) {
+            let numberFormatter = NumberFormatter()
+            numberFormatter.numberStyle = .decimal
+            numberFormatter.maximumFractionDigits = 1
+            
+            if viewsCount >= 10000 {
+                let viewsInTenThousand = Double(viewsCount) / 10000.0
+                return numberFormatter.string(from: NSNumber(value: viewsInTenThousand))! + "만회"
+            } else if viewsCount >= 1000 {
+                let viewsInThousand = Double(viewsCount) / 1000.0
+                return numberFormatter.string(from: NSNumber(value: viewsInThousand))! + "천회"
+            } else {
+                return "\(viewsCount)회"
+            }
+        } else {
+            return "조회수 로드 오류"
+        }
+    }
+    
+    // MARK: - Date Format
+    private func timeAgoSinceDate(_ isoDateString: String) -> String {
+        let dateFormatter = ISO8601DateFormatter()
+        
+        guard let date = dateFormatter.date(from: isoDateString) else {
+            return "Invalid Date"
+        }
+        
+        let currentDate = Date()
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date, to: currentDate)
+        
+        if let year = components.year, year > 0 {
+            return "\(year)년 전"
+        } else if let month = components.month, month > 0 {
+            return "\(month)개월 전"
+        } else if let day = components.day, day > 0 {
+            return "\(day)일 전"
+        } else if let hour = components.hour, hour > 0 {
+            return "\(hour)시간 전"
+        } else if let minute = components.minute, minute > 0 {
+            return "\(minute)분 전"
+        } else if let second = components.second, second > 0 {
+            return "\(second)초 전"
+        } else {
+            return "방금 전"
+        }
+    }
+    
+    // MARK: - Count Format
+    private func customFormattedCount(_ count: Int) -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.maximumFractionDigits = 1
+        
+        if count >= 10000 {
+            let likesInTenThousand = Double(count) / 10000.0
+            return numberFormatter.string(from: NSNumber(value: likesInTenThousand))! + "만"
+        } else if count >= 1000 {
+            let likesInThousand = Double(count) / 1000.0
+            return numberFormatter.string(from: NSNumber(value: likesInThousand))! + "천"
+        } else {
+            return "\(count)"
+        }
     }
     
 }

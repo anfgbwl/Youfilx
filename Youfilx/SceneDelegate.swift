@@ -20,10 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // 사용자 로그인 상태 확인
         if isLoggedIn() {
             // 로그인된 경우 탭 바 컨트롤러 표시
-            showTabBarController()
+            self.showTabBarController()
         } else {
             // 로그인되어 있지 않은 경우 로그인 화면 표시
-            showLoginViewController()
+            self.showLoginViewController()
         }
     }
     

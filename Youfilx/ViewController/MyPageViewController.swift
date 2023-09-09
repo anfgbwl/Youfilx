@@ -17,7 +17,8 @@ class MyPageViewController: UIViewController {
         (UIImage(systemName: "person.crop.circle")!, "회원정보"),
         (UIImage(systemName: "heart.circle")!, "찜한영상"),
         (UIImage(systemName: "tv.circle")!, "시청기록"),
-        (UIImage(systemName: "person.crop.circle.badge.xmark")!, "로그아웃"),
+        (UIImage(systemName: "person.crop.circle.badge.minus")!, "로그아웃"),
+        (UIImage(systemName: "person.crop.circle.badge.xmark")!, "회원탈퇴"),
     ]
 
     // MARK: - UI Componenets
@@ -176,6 +177,9 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
             }))
             alert.addAction(UIAlertAction(title: "취소", style: .cancel, handler: nil))
             present(alert, animated: true, completion: nil)
+        case 4:
+            // 회원탈퇴 기능
+            break
         default:
             break
         }
