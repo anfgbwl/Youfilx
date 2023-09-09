@@ -70,7 +70,7 @@ class MyPageFavoriteViewController: UIViewController {
 
 extension MyPageFavoriteViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return user.favoriteVideos!.count
+        return user.favoriteVideos?.count ?? 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

@@ -95,8 +95,8 @@ class HomeViewController: UIViewController {
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
-                                        HomeViewController.videoIds.append(id)
                                         self.fetchChannelThumbnail(channelId) { channelImage in
+                                            HomeViewController.videoIds.append(id)
                                             self.thumbnails.append(image)
                                             self.titles.append(title)
                                             self.channelTitles.append(channelTitle)

@@ -9,7 +9,7 @@ import Foundation
 
 struct Video: Codable {
     var id: String = ""
-//    var channelId: String = ""
+    var channelId: String = ""
     var thumbnailImage: String = ""
     var title: String = ""
     var creatorNickname: String = ""

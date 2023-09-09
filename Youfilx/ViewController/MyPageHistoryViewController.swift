@@ -68,10 +68,10 @@ class MyPageHistoryViewController: UIViewController {
     
     // MARK: - YouTube Video Load for Watch History
     private func loadVideoForWatchHistoryIfNeeded() {
-        startLoading()
-        print("시청 기록 순서 확인: \(watchHistory)")
         guard !isLoadingData else { return }
         isLoadingData = true
+        startLoading()
+        print("시청 기록 순서 확인: \(watchHistory)")
 
         // 비디오 정보를 가져오는 인덱스 변수
         var currentIndex = 0
@@ -103,13 +103,13 @@ class MyPageHistoryViewController: UIViewController {
                                     case .success(let data):
                                         if let image = UIImage(data: data) {
                                             // 배열에 순서대로 추가
-                                            self.fetchChannelThumbnail(channelId) { channelImage in
+//                                            self.fetchChannelThumbnail(channelId) { channelImage in
                                                 self.thumbnails.append(image)
                                                 self.titles.append(title)
                                                 self.channelTitles.append(channelTitle)
                                                 self.viewCounts.append(viewCount)
                                                 self.publishedAts.append(publishedAt)
-                                            }
+//                                            }
                                             // 다음 비디오 정보 가져오기
                                             currentIndex += 1
                                             loadNextVideo()
@@ -224,12 +224,12 @@ extension MyPageHistoryViewController: UICollectionViewDelegate, UICollectionVie
         
         if indexPath.row < thumbnails.count {
             let image = thumbnails[indexPath.row]
-            let channelImage = self.channelImages[indexPath.row]
+//            let channelImage = self.channelImages[indexPath.row]
             let title = titles[indexPath.row]
             let name = channelTitles[indexPath.row]
             let count = viewCounts[indexPath.row]
             let date = publishedAts[indexPath.row]
-            cell.configure(video: image, image: channelImage, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+            cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
         }
         
         return cell
