@@ -166,6 +166,10 @@ class SignUpViewController: UIViewController {
     // MARK: - 오토레이아웃 설정
     
     func setupUI() {
+        // Navigation Bar
+        navigationController?.navigationBar.tintColor = .label
+        navigationController?.navigationBar.topItem?.title = ""
+        
         view.addSubview(signUpLabel)
         view.addSubview(stackView)
         
