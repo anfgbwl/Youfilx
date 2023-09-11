@@ -2,7 +2,7 @@
 //  VideoInformationSearchResponse.swift
 //  Youfilx
 //
-//  Created by hong on 2023/09/06.
+//  Created by 삼인조 on 2023/09/06.
 //
 
 import Foundation
@@ -37,7 +37,6 @@ struct VideoInformationSearchResponse: Decodable {
             let categoryId: String
             let liveBroadcastContent: String
             let localized: Localized
-//            let defaultAudioLanguage: String
             
             struct ThumbnailImages: Decodable {
                 let `default`: Thumbnail
