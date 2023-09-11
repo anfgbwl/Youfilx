@@ -2,7 +2,7 @@
 //  ImageAPI.swift
 //  Youfilx
 //
-//  Created by hong on 2023/09/08.
+//  Created by 삼인조 on 2023/09/08.
 //
 
 import Foundation

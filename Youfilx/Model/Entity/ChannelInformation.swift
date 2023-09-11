@@ -2,7 +2,7 @@
 //  ChannelInformation.swift
 //  Youfilx
 //
-//  Created by hong on 2023/09/07.
+//  Created by 삼인조 on 2023/09/07.
 //
 
 import Foundation

@@ -2,7 +2,7 @@
 //  ChannelResponse.swift
 //  Youfilx
 //
-//  Created by hong on 2023/09/06.
+//  Created by 삼인조 on 2023/09/06.
 //
 
 import Foundation
@@ -29,7 +29,6 @@ struct ChannelResponse: Decodable {
         struct Snippet: Decodable {
             let title: String
             let description: String
-//            let customUrl: String
             let publishedAt: String
             let thumbnails: Thumbnails
             

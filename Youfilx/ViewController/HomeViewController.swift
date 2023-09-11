@@ -76,21 +76,21 @@ class HomeViewController: UIViewController {
             switch response.result {
             case .success(let data):
                 print(data)
-                if let json = data as? [String: Any], let items = json["items"] as? [[String: Any]] {
+                if let videoInfo = data as? [String: Any], let items = videoInfo["items"] as? [[String: Any]] {
                     for item in items {
                         if let id = item["id"] as? String,
                            !HomeViewController.videoIds.contains(id),
                            let snippet = item["snippet"] as? [String: Any],
-                           let statistics = item["statistics"] as? [String: Any],
-                           let viewCount = statistics["viewCount"] as? String,
                            let publishedAt = snippet["publishedAt"] as? String,
                            let channelId = snippet["channelId"] as? String,
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String: Any],
                            let maxres = thumbnails["maxres"] as? [String: Any],
-                           let thumbnailUrl = maxres["url"] as? String,
-                           let channelTitle = snippet["channelTitle"] as? String {
-                            AF.request(thumbnailUrl).responseData { response in
+                           let url = maxres["url"] as? String,
+                           let channelTitle = snippet["channelTitle"] as? String,
+                           let statistics = item["statistics"] as? [String: Any],
+                           let viewCount = statistics["viewCount"] as? String {
+                            AF.request(url).responseData { response in
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
@@ -114,7 +114,7 @@ class HomeViewController: UIViewController {
                             }
                         }
                     }
-                    self.nextPageToken = json["nextPageToken"] as? String
+                    self.nextPageToken = videoInfo["nextPageToken"] as? String
                 }
             case .failure(let error):
                 print("🚫 \(error)")
