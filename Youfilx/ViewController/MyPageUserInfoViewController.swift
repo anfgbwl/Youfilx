@@ -104,7 +104,6 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         button.addTarget(self, action: #selector(confirmPasswordVisibilityButtonTapped), for: .touchUpInside)
         return button
     }()
-
     
     // MARK: - 저장 버튼
     private let saveButton: UIButton = {
@@ -151,7 +150,6 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         }
     }
 
-
     // MARK: - UI
     func setupUI() {
         // Navigation Bar
@@ -159,10 +157,8 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         navigationController?.navigationBar.topItem?.title = ""
         
         view.backgroundColor = .systemBackground
-
         
         title = "회원 정보 수정"
-
         
         // UI 요소를 뷰에 추가
         view.addSubview(profileImageView)
@@ -220,16 +216,12 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
             saveButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             saveButton.widthAnchor.constraint(equalToConstant: 150),
             saveButton.heightAnchor.constraint(equalToConstant: 40),
-            
-
         ])
         
         // 사용자 정보를 텍스트 필드와 레이블에 설정
         nicknameTextField.text = "\(user.nickname)"
         emailLabel.text = "  \(user.id)"
     }
-    
-
     
     // MARK: - 프로필 사진 변경 액션
     @objc private func changeProfilePicture() {
@@ -370,6 +362,4 @@ class MyPageUserInfoViewController: UIViewController, UIImagePickerControllerDel
         picker.dismiss(animated: true, completion: nil)
     }
 
-
-    
 }

@@ -456,7 +456,6 @@ extension DetailPageViewController {
             return "\(count)"
         }
     }
-    
 }
 
 extension UIImage {

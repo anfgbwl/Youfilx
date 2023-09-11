@@ -136,7 +136,6 @@ class MyPageViewController: UIViewController {
         ])
     }
     
-    
 }
 
 extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
@@ -222,7 +221,6 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
         let favoriteVideos = [Video]() // 즐겨찾기한 비디오 배열
 
         initializeUserDefaults(id: id, password: password, image: userImage, watchHistory: watchHistory, favoriteVideos: favoriteVideos)
-
         
         // 로그인 화면으로 이동
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {

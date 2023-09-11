@@ -6,7 +6,6 @@ class SignUpViewController: UIViewController {
     var signUpEmail: String?
     var signUpPassword: String?
     
-    
     // MARK: - 회원가입 레이블
     private let signUpLabel: UILabel = {
         let label = UILabel()
@@ -40,7 +39,6 @@ class SignUpViewController: UIViewController {
         tf.addTarget(self, action: #selector(textFieldShouldEndEditing(_:)), for: .editingChanged)
         return tf
     }()
-    
     
     // MARK: - 비밀번호 텍스트 필드 뷰
     private lazy var passwordView: UIView = {
@@ -164,7 +162,6 @@ class SignUpViewController: UIViewController {
     }
     
     // MARK: - 오토레이아웃 설정
-    
     func setupUI() {
         // Navigation Bar
         navigationController?.navigationBar.tintColor = .label
@@ -181,8 +178,6 @@ class SignUpViewController: UIViewController {
         passwordConfirmCheckButton.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
         signUpButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        
         
         NSLayoutConstraint.activate([
             // 회원가입 레이블
@@ -233,7 +228,6 @@ class SignUpViewController: UIViewController {
         let imageName = passwordConfirmTextField.isSecureTextEntry ? "eye.fill" : "eye.slash.fill"
         passwordConfirmCheckButton.setImage(UIImage(systemName: imageName), for: .normal)
     }
-    
     
     // MARK: - 회원가입 버튼 눌렀을 때 동작
     @objc func signUpButtonTapped() {
@@ -303,7 +297,6 @@ class SignUpViewController: UIViewController {
         }
         return false
     }
-
     
     // MARK: - 얼럿창 표시 메서드
     private func showAlert(title: String, message: String) {
@@ -346,5 +339,3 @@ extension SignUpViewController: UITextFieldDelegate {
         return true
     }
 }
-
-

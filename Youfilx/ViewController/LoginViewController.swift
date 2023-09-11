@@ -4,7 +4,6 @@ class LoginViewController: UIViewController {
     
     var loginCompletion: (() -> Void)?
 
-
     // MARK: - 로고 타이틀
     private lazy var logoImageView: UIImageView = {
         let image = UIImage(named: "youflix_logo") // 이미지 파일 이름
@@ -21,7 +20,6 @@ class LoginViewController: UIViewController {
         view.addSubview(emailTextField)
         return view
     }()
-    
     
     // 이메일 텍스트 필드
     private lazy var emailTextField: UITextField = {
@@ -142,9 +140,7 @@ class LoginViewController: UIViewController {
         
     }
     
-    
     //MARK: - 오토레이아웃 설정
-    
     func setupUI() {
         view.addSubview(logoImageView)
         view.addSubview(stackView)
@@ -156,7 +152,6 @@ class LoginViewController: UIViewController {
         passwordCheckButton.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
         signUpButton.translatesAutoresizingMaskIntoConstraints = false
-        
         
         NSLayoutConstraint.activate([
             // 로고 이미지
@@ -190,7 +185,6 @@ class LoginViewController: UIViewController {
     }
     
     // MARK: - 버튼 관련 메서드
-    
     @objc func loginButtonTapped() {
         guard let enteredEmail = emailTextField.text, !enteredEmail.isEmpty,
               let enteredPassword = passwordTextField.text, !enteredPassword.isEmpty,
@@ -217,16 +211,11 @@ class LoginViewController: UIViewController {
         }
     }
     
-    
-
-    
     @objc func moveToSignUpViewController() {
         print("회원가입 버튼 눌림")
         let signUpViewController = SignUpViewController()
         navigationController?.pushViewController(signUpViewController, animated: true)
     }
-    
-    
     
     @objc func passwordCheck() {
         passwordTextField.isSecureTextEntry.toggle()
@@ -266,10 +255,6 @@ class LoginViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
 }
-
-
-
-
 
 // MARK: - delegate 설정
 extension LoginViewController: UITextFieldDelegate {
