@@ -29,5 +29,10 @@ func loadUserFromUserDefaults() -> User? {
     return nil
 }
 
+func initializeUserDefaults(id: String, password: String, image: Data?, watchHistory: [Video]?, favoriteVideos: [Video]?) {
+    let user = User(id: id, password: password, image: image, watchHistory: watchHistory, favoriteVideos: favoriteVideos)
+    saveUserToUserDefaults(user: user)
+}
+
 
 

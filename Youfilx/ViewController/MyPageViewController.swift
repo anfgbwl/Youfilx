@@ -209,14 +209,20 @@ extension MyPageViewController: UITableViewDelegate, UITableViewDataSource {
     
     // 사용자 로그아웃 처리
     func performResign() {
+        UserDefaults.standard.removeObject(forKey: "user")
+        
         // 로그아웃 상태로 업데이트
         UserDefaults.standard.set(false, forKey: "isLoggedIn")
         
         // 기존 사용자 정보 초기화
-        var user = loadUserFromUserDefaults()
-        user?.isLoggedIn = false
-        saveUserToUserDefaults(user: user!)
-        
+        let id = "test@example.com"
+        let password = "password123"
+        let userImage = Data() // 사용자 이미지 데이터
+        let watchHistory = [Video]() // 시청 기록 배열
+        let favoriteVideos = [Video]() // 즐겨찾기한 비디오 배열
+
+        initializeUserDefaults(id: id, password: password, image: userImage, watchHistory: watchHistory, favoriteVideos: favoriteVideos)
+
         // 로그인 화면으로 이동
         if let sceneDelegate = UIApplication.shared.connectedScenes.first?.delegate as? SceneDelegate {
             sceneDelegate.showLoginViewController()
