@@ -46,14 +46,6 @@ class MyPageHistoryViewController: UIViewController {
         loadVideo() // 뷰가 나타날 때 한 번만 호출
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-//        // 시청한 비디오 목록을 가져와서 화면에 표시
-//        watchHistory = loadWatchHistory() ?? []
-//        loadVideo()
-    }
-    
     // MARK: - Load Account
     private func loadWatchHistory() -> [Video]? {
         // 사용자 정보를 UserDefaults에서 가져옴
@@ -86,7 +78,6 @@ class MyPageHistoryViewController: UIViewController {
                     guard let self = self else { return }
                     switch response.result {
                     case .success(let data):
-//                        print(data)
                         if let json = data as? [String: Any], let items = json["items"] as? [[String: Any]], let item = items.first {
                             if let snippet = item["snippet"] as? [String: Any],
                                let statistics = item["statistics"] as? [String: Any],
