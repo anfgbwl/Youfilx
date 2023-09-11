@@ -62,11 +62,12 @@
 <br><br>
 
 ## 🧐 앱 실행 및 사용 방법
-![‎앱실행화면 ‎001](https://github.com/anfgbwl/Youfilx/assets/53863005/b24d3afc-123d-4ec9-b3ac-75d26778d8ac)
+![‎앱실행화면(배경삭제)](https://github.com/anfgbwl/Youfilx/assets/53863005/27742e75-2779-4bb6-ba2a-b9c2677d8b93)
 앱 가이드 영상 : [Youflix](https://youtu.be/P0AlOSLLunY?si=iL6gG3_x-RkYXGOg)
 
 
 <br><br>
+
 
 ## 💥 트러블 슈팅
 - 다음 페이지를 토큰을 계속해서 여러번  호출하는 문제로 인해 중복 동영상 생성
