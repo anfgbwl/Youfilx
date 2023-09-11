@@ -68,7 +68,6 @@ class SearchViewController: UIViewController {
                         if let id = item["id"] as? [String: Any],
                            let videoId = id["videoId"] as? String,
                            !SearchViewController.videoIds.contains(videoId) {
-                            SearchViewController.videoIds.append(videoId)
                             self.fetchVideoViewCounts(videoId)
                         } else {
                             print("🚫 Failed to convert data to UIImage")
@@ -109,6 +108,7 @@ class SearchViewController: UIViewController {
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
+                                         SearchViewController.videoIds.append(videoId)
                                         self.publishedAts.append(publishedAt)
                                         self.titles.append(title)
                                         self.thumbnails.append(image)
@@ -168,6 +168,17 @@ extension SearchViewController: UISearchBarDelegate {
         }
         loadVideo()
     }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        // 검색기록 초기화
+        nextPageToken = ""
+        SearchViewController.videoIds = []
+        thumbnails = []
+        titles = []
+        channelTitles = []
+        viewCounts = []
+        publishedAts = []
+    }
 }
 
 extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource {
@@ -190,6 +201,8 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 디테일페이지에 넘겨주는 비디오 정보(id)
+        print("비디오 id: \(SearchViewController.videoIds[indexPath.row])")
+        print("비디오 타이틀: \(titles[indexPath.row])")
         let selectedVideo = SearchViewController.videoIds[indexPath.row]
         navigationController?.pushViewController(DetailPageViewController(videoId: selectedVideo), animated: true)
     }
