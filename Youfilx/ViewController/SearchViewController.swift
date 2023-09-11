@@ -16,6 +16,7 @@ class SearchViewController: UIViewController {
     private var nextPageToken: String?
     static var videoIds: [String] = []
     private var thumbnails: [UIImage] = []
+    private var channelImages: [UIImage] = []
     private var titles: [String] = []
     private var channelTitles: [String] = []
     private var viewCounts: [String] = []
@@ -97,6 +98,7 @@ class SearchViewController: UIViewController {
                     for item in items {
                         if let snippet = item["snippet"] as? [String: Any],
                            let publishedAt = snippet["publishedAt"] as? String,
+                           let channelId = snippet["channelId"] as? String,
                            let title = snippet["title"] as? String,
                            let thumbnails = snippet["thumbnails"] as? [String: Any],
                            let maxres = thumbnails["maxres"] as? [String: Any],
@@ -108,15 +110,16 @@ class SearchViewController: UIViewController {
                                 switch response.result {
                                 case .success(let data):
                                     if let image = UIImage(data: data) {
-                                         SearchViewController.videoIds.append(videoId)
-                                        self.publishedAts.append(publishedAt)
-                                        self.titles.append(title)
-                                        self.thumbnails.append(image)
-                                        self.viewCounts.append(viewCount)
-                                        self.channelTitles.append(channelTitle)
-                                        self.viewCounts.append(viewCount)
-                                        DispatchQueue.main.async {
-                                            self.collectionView.reloadData()
+                                        self.fetchChannelThumbnail(channelId) { channelImage in
+                                            SearchViewController.videoIds.append(videoId)
+                                            self.thumbnails.append(image)
+                                            self.titles.append(title)
+                                            self.channelTitles.append(channelTitle)
+                                            self.viewCounts.append(viewCount)
+                                            self.publishedAts.append(publishedAt)
+                                            DispatchQueue.main.async {
+                                                self.collectionView.reloadData()
+                                            }
                                         }
                                     } else {
                                         print("🚫 Failed to convert data to UIImage")
@@ -130,6 +133,38 @@ class SearchViewController: UIViewController {
                 }
             case .failure(let error):
                 print("🚫 searchVideoLoad request: \(error)")
+            }
+        }
+    }
+    
+    private func fetchChannelThumbnail(_ channelId: String, completion: @escaping (UIImage) -> Void) {
+        // YouTube API 채널 정보 요청 생성
+        let request = YoutubeAPI.channel(channelId)
+        
+        AF.request(request).responseDecodable(of: ChannelResponse.self) { [weak self] response in
+            guard let self = self else { return }
+            switch response.result {
+            case .success(let channelResponse):
+                if let channelInformation = channelResponse.toChannelInformation() {
+                    // channelInformation.thumbnailURL를 사용하여 채널 썸네일을 가져옴
+                    if let thumbnailUrl = URL(string: channelInformation.thumbnailURL) {
+                        AF.request(thumbnailUrl).responseData { response in
+                            switch response.result {
+                            case .success(let data):
+                                if let channelImage = UIImage(data: data) {
+                                    self.channelImages.append(channelImage)
+                                    completion(channelImage)
+                                } else {
+                                    print("🚫 Failed to convert data to UIImage")
+                                }
+                            case .failure(let error):
+                                print("🚫 Image download error: \(error)")
+                            }
+                        }
+                    }
+                }
+            case .failure(let error):
+                print("🚫 \(error)")
             }
         }
     }
@@ -191,18 +226,17 @@ extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSo
             fatalError("ERROR")
         }
         let image = self.thumbnails[indexPath.row]
+        let channelImage = self.channelImages[indexPath.row]
         let title = self.titles[indexPath.row]
         let name = self.channelTitles[indexPath.row]
         let count = self.viewCounts[indexPath.row]
         let date = self.publishedAts[indexPath.row]
-        cell.configure(video: image, image: image, title: title, channelTitle: name, viewCount: count, publishedAt: date)
+        cell.configure(video: image, image: channelImage, title: title, channelTitle: name, viewCount: count, publishedAt: date)
         return cell
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         // 디테일페이지에 넘겨주는 비디오 정보(id)
-        print("비디오 id: \(SearchViewController.videoIds[indexPath.row])")
-        print("비디오 타이틀: \(titles[indexPath.row])")
         let selectedVideo = SearchViewController.videoIds[indexPath.row]
         navigationController?.pushViewController(DetailPageViewController(videoId: selectedVideo), animated: true)
     }
